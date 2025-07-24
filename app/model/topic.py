@@ -1,9 +1,9 @@
 class Topic:
-    id_counter = 1
+    _id_counter = 1
 
     def __init__(self, name: str):
-        self.id = Topic.id_counter
-        Topic.id_counter += 1
+        self.id = Topic._id_counter
+        Topic._id_counter += 1
         
         self.name = name
 

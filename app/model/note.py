@@ -1,12 +1,12 @@
 from datetime import datetime
-from app.model.topic import Topic
+from model.topic import Topic
 
 class Note:
-    id_counter = 1
+    _id_counter = 1
 
     def __init__(self, title: str, topic: Topic, content: str):
-        self.id = Note.id_counter
-        Note.id_counter += 1
+        self.id = Note._id_counter
+        Note._id_counter += 1
 
         self.title = title
         self.topic = topic
