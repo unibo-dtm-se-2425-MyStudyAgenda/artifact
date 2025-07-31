@@ -1,0 +1,24 @@
+<NavigationBar@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '50dp'
+    spacing: '10dp'
+    padding: '10dp'
+    canvas.before:
+        Color:
+            rgba: .2, .2, .2, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Button:
+        text: 'Tasks'
+        on_release: app.root.current = 'tasks'
+        background_color: (.3, .3, .3, 1)
+    Button:
+        text: 'Planner'
+        on_release: app.root.current = 'planner'
+        background_color: (.3, .3, .3, 1)
+    Button:
+        text: 'Notes'
+        on_release: app.root.current = 'notes'
+        background_color: (.3, .3, .3, 1)
