@@ -5,7 +5,8 @@ class TopicController:
     def __init__(self):
         self.dao = TopicDAO()
 
-    def create_topic(self, topic: Topic):
+    def create_topic(self, topic_name: Topic):
+        topic = Topic(name=topic_name)
         self.dao.insert_topic(topic)
 
     def get_all_topics(self):
@@ -15,6 +16,12 @@ class TopicController:
     def get_topic_by_id(self, topic_id: int):
         row = self.dao.get_topic_by_id(topic_id)
         return self._row_to_topic(row) if row else None
+    
+    def get_topic_by_name(self, name):
+        row = self.dao.get_topic_by_name(name)
+        if row:
+            return Topic(id=row[0], name=row[1])
+        return None
 
     def delete_topic(self, topic_id: int):
         self.dao.delete_topic(topic_id)

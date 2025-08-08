@@ -25,87 +25,61 @@
                 on_release: root.open_add_task_popup()
 
 <AddTaskPopup@Popup>:
-    title: 'Add New Task'
-    size_hint: 0.9, 0.8
+    title: "Add Task"
+    size_hint: .9, .9
     auto_dismiss: False
-    BoxLayout:
-        orientation: 'vertical'
-        padding: '10dp'
-        spacing: '10dp'
-        TextInput:
-            id: description_input
-            hint_text: 'Description'
-            multiline: False
-        TextInput:
-            id: topic_input
-            hint_text: 'Topic (or select existing)'
-            multiline: False
-        Spinner:
-            id: priority_spinner
-            text: 'Priority (0-3)'
-            values: ['0', '1', '2', '3']
-        TextInput:
-            id: date_input
-            hint_text: 'Date (YYYY-MM-DD) — optional'
-            multiline: False
-        TextInput:
-            id: start_time_input
-            hint_text: 'Start time (HH:MM) — optional'
-            multiline: False
-        TextInput:
-            id: end_time_input
-            hint_text: 'End time (HH:MM) — optional'
-            multiline: False
-        BoxLayout:
-            size_hint_y: None
-            height: '50dp'
-            spacing: '10dp'
-            Button:
-                text: 'Cancel'
-                on_release: root.dismiss()
-            Button:
-                text: 'Add Task'
-                on_release: app.add_task_from_popup(description_input.text, topic_input.text, priority_spinner.text, date_input.text, start_time_input.text, end_time_input.text, root)
 
-<AddTaskPopup>:
-    title: 'Add New Task'
-    size_hint: 0.9, 0.8
-    auto_dismiss: False
     BoxLayout:
-        orientation: 'vertical'
-        padding: '10dp'
-        spacing: '10dp'
+        orientation: "vertical"
+        spacing: 10
+        padding: 10
+
         TextInput:
-            id: description_input
-            hint_text: 'Description'
+            id: desc_input
+            hint_text: "Description"
             multiline: False
-        TextInput:
-            id: topic_input
-            hint_text: 'Topic'
-            multiline: False
+
+        BoxLayout:
+            spacing: 5
+            Spinner:
+                id: topic_spinner
+                text: "Select topic"
+                values: []
+            Button:
+                text: "+"
+                size_hint_x: None
+                width: "40dp"
+                on_release: root.add_new_topic()
+
         Spinner:
             id: priority_spinner
-            text: 'Priority (0-3)'
-            values: ['0', '1', '2', '3']
+            text: "Select priority"
+            values: ["Low", "Medium", "High"]
+
         TextInput:
             id: date_input
-            hint_text: 'Date (YYYY-MM-DD)'
+            hint_text: "Scheduled Date (YYYY-MM-DD)"
             multiline: False
+
         TextInput:
             id: start_time_input
-            hint_text: 'Start Time (HH:MM)'
+            hint_text: "Start Time (HH:MM)"
             multiline: False
+
         TextInput:
             id: end_time_input
-            hint_text: 'End Time (HH:MM)'
+            hint_text: "End Time (HH:MM)"
             multiline: False
+
         BoxLayout:
             size_hint_y: None
-            height: '50dp'
-            spacing: '10dp'
+            height: '44dp'
+            spacing: 10
+
             Button:
-                text: 'Cancel'
+                text: "Cancel"
                 on_release: root.dismiss()
+
             Button:
-                text: 'Add Task'
-                on_release: app.add_task_from_popup(description_input.text, topic_input.text, priority_spinner.text, date_input.text, start_time_input.text, end_time_input.text, root)
+                text: "Add"
+                on_release: root.add_task()

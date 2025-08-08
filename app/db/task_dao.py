@@ -8,17 +8,21 @@ class TaskDAO:
 
     def insert_task(self, task: Task):
         self.db.cursor.execute(
-            """ INSERT INTO tasks (description, topic_id, priority, is_completed, scheduled_date, start_time, end_time)
-                VALUES (?, ?, ?, ?, ?, ?, ?) """,
-            (task.description,
-            task.topic.id,
-            task.priority,
-            task.is_completed,
-            task.scheduled_date.isoformat() if task.scheduled_date else None,
-            task.start_time.isoformat() if task.start_time else None,
-            task.end_time.isoformat() if task.end_time else None)
+            """INSERT INTO tasks (description, topic_id, priority, is_completed, scheduled_date, start_time, end_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (
+                task.description,
+                task.topic.id,
+                task.priority,
+                task.is_completed,
+                task.scheduled_date.isoformat() if task.scheduled_date else None,
+                task.start_time.isoformat() if task.start_time else None,
+                task.end_time.isoformat() if task.end_time else None
+            )
         )
         self.db.commit()
+        return self.db.cursor.lastrowid
+
 
     def get_all_tasks(self):
         self.db.cursor.execute("SELECT * FROM tasks")

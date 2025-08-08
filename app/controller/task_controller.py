@@ -1,14 +1,46 @@
 from db.task_dao import TaskDAO
 from model.task import Task
 from model.topic import Topic
-from datetime import date, time
+from controller.topic_controller import TopicController
+from datetime import datetime, date, time
 
 class TaskController:
     def __init__(self):
         self.dao = TaskDAO()
+        self.topic_controller = TopicController()
 
-    def create_task(self, task: Task):
-        self.dao.insert_task(task)
+    def create_task(self, description, topic_name, priority, date=None, start_time=None, end_time=None):
+        topic_obj = self.topic_controller.get_topic_by_name(topic_name)
+        if not topic_obj:
+            raise ValueError(f"Topic '{topic_name}' non trovato")
+
+        if isinstance(date, str) and date.strip():
+            date = datetime.strptime(date, "%Y-%m-%d").date()
+        else:
+            date = None
+
+        if isinstance(start_time, str) and start_time.strip():
+            start_time = datetime.strptime(start_time, "%H:%M").time()
+        else:
+            start_time = None
+
+        if isinstance(end_time, str) and end_time.strip():
+            end_time = datetime.strptime(end_time, "%H:%M").time()
+        else:
+            end_time = None
+
+        task = Task(
+            description=description,
+            topic=topic_obj,
+            priority=priority,
+            scheduled_date=date,
+            start_time=start_time,
+            end_time=end_time
+        )
+
+        task_id = self.dao.insert_task(task)
+        task.task_id = task_id
+        return task_id
 
     def get_all_tasks(self):
         tasks_data = self.dao.get_all_tasks()
@@ -32,7 +64,7 @@ class TaskController:
 
     def _row_to_task(self, row):
         return Task(
-            id=row[0],
+            task_id=row[0],
             description=row[1],
             topic=Topic(id=row[2]),
             priority=row[3],
