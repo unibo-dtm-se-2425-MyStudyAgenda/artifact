@@ -6,7 +6,7 @@ from view.planner_screen import PlannerScreen
 from view.notes_screen import NotesScreen
 from controller.task_controller import TaskController
 
-Builder.load_file("nav_bar.kv")
+Builder.load_file("view/nav_bar.kv")
 Builder.load_file("view/task_screen.kv")
 Builder.load_file("view/planner_screen.kv")
 Builder.load_file("view/notes_screen.kv")
