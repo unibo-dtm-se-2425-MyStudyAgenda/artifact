@@ -29,7 +29,7 @@ class TaskDAO:
         return self.db.cursor.fetchall()
 
     def get_tasks_by_topic(self, topic_id: int):
-        self.db.cursor.execute("SELECT * FROM tasks WHERE topic_id = ?", (topic_id))
+        self.db.cursor.execute("SELECT * FROM tasks WHERE topic_id = ?", (topic_id,))
         return self.db.cursor.fetchall()
 
     def set_time_slot(self, task_id: int, scheduled_date: str, start_time: str, end_time: str):
@@ -41,13 +41,13 @@ class TaskDAO:
         self.db.commit()
 
     def delete_task(self, task_id: int):
-        self.db.cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id))
+        self.db.cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
         self.db.commit()
 
     def mark_completed(self, task_id: int):
-        self.db.cursor.execute("UPDATE tasks SET is_completed = 1 WHERE id = ?", (task_id))
+        self.db.cursor.execute("UPDATE tasks SET is_completed = 1 WHERE id = ?", (task_id,))
         self.db.commit()
     
     def mark_notcompleted(self, task_id: int):
-        self.db.cursor.execute("UPDATE tasks SET is_completed = 0 WHERE id = ?", (task_id))
+        self.db.cursor.execute("UPDATE tasks SET is_completed = 0 WHERE id = ?", (task_id,))
         self.db.commit()
