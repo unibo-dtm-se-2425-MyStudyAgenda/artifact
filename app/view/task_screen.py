@@ -1,11 +1,24 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from kivy.uix.popup import Popup
+from view.task_item import TaskItem
 
 class TaskScreen(Screen):
     def open_add_task_popup(self):
         popup = AddTaskPopup()
         popup.open()
+    
+    def on_enter(self):
+        self.load_tasks()
+
+    def load_tasks(self):
+        app = App.get_running_app()
+        self.ids.task_list.clear_widgets()
+        tasks = app.task_controller.get_all_tasks()
+        for task in tasks:
+            task_item = TaskItem(task)
+            self.ids.task_list.add_widget(task_item)
+
 
 class AddTaskPopup(Popup):
     def on_open(self):

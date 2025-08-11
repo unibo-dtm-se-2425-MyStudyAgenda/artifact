@@ -4,7 +4,7 @@ from kivy.lang import Builder
 from view.task_screen import TaskScreen
 from view.planner_screen import PlannerScreen
 from view.notes_screen import NotesScreen
-from view.components.task_item import TaskItem
+from view.task_item import TaskItem
 from controller.task_controller import TaskController
 from controller.topic_controller import TopicController
 
@@ -12,6 +12,7 @@ Builder.load_file("view/nav_bar.kv")
 Builder.load_file("view/task_screen.kv")
 Builder.load_file("view/planner_screen.kv")
 Builder.load_file("view/notes_screen.kv")
+Builder.load_file("view/task_item.kv")
 
 class MyStudyAgenda(App):
     def build(self):
@@ -44,6 +45,11 @@ class MyStudyAgenda(App):
         )
         print(f"Task created with ID: {task_id}")
         popup.dismiss()
+    
+    def refresh_task_list(self):
+        task_screen = self.sm.get_screen("tasks")
+        task_screen.load_tasks()
+
 
 if __name__ == "__main__":
     MyStudyAgenda().run()
