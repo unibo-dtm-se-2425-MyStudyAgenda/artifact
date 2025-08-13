@@ -15,7 +15,7 @@
             rectangle: (*self.pos, *self.size)
 
     GridLayout:
-        cols: 5
+        cols: 6
         spacing: 10
 
         CheckBox:
@@ -24,6 +24,13 @@
 
         Label:
             text: "[b]"+root.description+"[/b]"
+            font_size: sp(16)
+            markup: True
+            valign: "middle"
+            halign: "center"
+        
+        Label:
+            text: root.topic
             font_size: sp(16)
             markup: True
             valign: "middle"
