@@ -36,10 +36,11 @@ class AddTaskPopup(Popup):
         end = self.ids.end_time_input.text.strip() if self.ids.end_time_input.text else ""
 
         priority_map = {"Low": 1, "Medium": 2, "High": 3}
-        prio = priority_map.get(prio_label, 1)
+        prio = priority_map.get(prio_label)
 
         app = App.get_running_app()
         app.add_task_from_popup(desc, topic, prio, date, start, end, self)
+        app.refresh_task_list()
 
     def add_new_topic(self):
         from kivy.uix.textinput import TextInput
