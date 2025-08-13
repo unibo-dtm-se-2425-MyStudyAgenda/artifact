@@ -31,9 +31,9 @@ class AddTaskPopup(Popup):
         desc = self.ids.desc_input.text.strip()
         topic = self.ids.topic_spinner.text.strip()
         prio_label = self.ids.priority_spinner.text.strip()
-        date = self.ids.date_input.text.strip()
-        start = self.ids.start_time_input.text.strip()
-        end = self.ids.end_time_input.text.strip()
+        date = self.ids.date_input.text.strip() if self.ids.date_input else ""
+        start = self.ids.start_time_input.text.strip() if self.ids.start_time_input.text else ""
+        end = self.ids.end_time_input.text.strip() if self.ids.end_time_input.text else ""
 
         priority_map = {"Low": 1, "Medium": 2, "High": 3}
         prio = priority_map.get(prio_label, 1)
