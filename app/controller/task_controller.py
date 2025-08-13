@@ -66,10 +66,11 @@ class TaskController:
         return Task(
             task_id=row[0],
             description=row[1],
-            topic=Topic(id=row[2]),
-            priority=row[3],
-            is_completed=bool(row[4]),
-            scheduled_date=date.fromisoformat(row[5]) if row[5] else None,
-            start_time=time.fromisoformat(row[6]) if row[6] else None,
-            end_time=time.fromisoformat(row[7]) if row[7] else None
+            topic=Topic(id=row[2], name=row[3]),
+            priority=row[4],
+            is_completed=bool(row[5]),
+            scheduled_date=date.fromisoformat(row[6]) if row[6] else None,
+            start_time=time.fromisoformat(row[7]) if row[7] else None,
+            end_time=time.fromisoformat(row[8]) if row[8] else None
         )
+

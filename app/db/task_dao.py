@@ -25,8 +25,12 @@ class TaskDAO:
 
 
     def get_all_tasks(self):
-        self.db.cursor.execute("SELECT * FROM tasks")
+        self.db.cursor.execute(
+            """SELECT t.id, t.description, t.topic_id, tp.name, t.priority, t.is_completed, t.scheduled_date, t.start_time, t.end_time
+            FROM tasks t
+            LEFT JOIN topics tp ON t.topic_id = tp.id""")
         return self.db.cursor.fetchall()
+
 
     def get_tasks_by_topic(self, topic_id: int):
         self.db.cursor.execute("SELECT * FROM tasks WHERE topic_id = ?", (topic_id,))
