@@ -10,20 +10,12 @@ class TaskItem(BoxLayout):
     is_completed = BooleanProperty(False)
 
     def __init__(self, task, **kwargs):
-        self._initializing = True
         super().__init__(**kwargs)
-
         self.task_id = str(getattr(task, "task_id", getattr(task, "id", None)))
-
         self.description = task.description or ""
         self.topic = str(task.topic.name) if (task.topic and getattr(task.topic, "name", None)) else ""
-        self.priority = str(task.priority) if getattr(task, "priority", None) is not None else ""
+        self.priority = {1: "Low", 2: "Medium", 3: "High"}.get(task.priority, "Low")
         self.is_completed = bool(getattr(task, "is_completed", False))
-
-        self._initializing = False
-
-    def get_priority_label(self):
-        return {"1": "Low", "2": "Medium", "3": "High"}.get(self.priority, "Low")
 
     def on_checkbox_active(self, checkbox, value):
         if getattr(self, "_initializing", False):
