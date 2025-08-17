@@ -73,7 +73,6 @@ class TaskItem(BoxLayout):
     def open_schedule_popup(self):
         layout = BoxLayout(orientation="vertical", spacing=10, padding=10)
 
-        # Bottoni per aprire pickers
         date_btn = MDFlatButton(
             text=f"Date: {self.selected_date or 'Select'}",
             on_release=lambda x: self.open_date_picker(date_btn)

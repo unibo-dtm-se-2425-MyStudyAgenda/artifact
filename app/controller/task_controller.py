@@ -53,7 +53,6 @@ class TaskController:
     def set_time_slot(self, task_id, scheduled_date, start_time, end_time):
         self.dao.set_time_slot(task_id, scheduled_date, start_time, end_time)
 
-
     def delete_task(self, task_id: int):
         self.dao.delete_task(task_id)
 
