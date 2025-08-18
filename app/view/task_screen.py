@@ -42,7 +42,6 @@ class AddTaskPopup(Popup):
         self.selected_date = formatted
         self.ids.date_btn.text = f"Date: {formatted}"
 
-
     def open_time_picker(self, mode):
         time_dialog = MDTimePicker()
         time_dialog.bind(time=lambda inst, time: self.set_time(mode, time))
@@ -72,3 +71,35 @@ class AddTaskPopup(Popup):
         app = App.get_running_app()
         app.add_task_from_popup(desc, topic, prio, date, start, end, self)
         app.refresh_task_list()
+
+    def add_new_topic(self):
+        from kivy.uix.textinput import TextInput
+        from kivy.uix.boxlayout import BoxLayout
+        from kivy.uix.button import Button
+
+        content = BoxLayout(orientation="vertical", spacing=10, padding=10)
+        input_field = TextInput(hint_text="New topic name", multiline=False)
+        btn_layout = BoxLayout(size_hint_y=None, height="44dp", spacing=10)
+        btn_cancel = Button(text="Cancel")
+        btn_add = Button(text="Add")
+
+        btn_layout.add_widget(btn_cancel)
+        btn_layout.add_widget(btn_add)
+
+        content.add_widget(input_field)
+        content.add_widget(btn_layout)
+
+        popup = Popup(title="Add Topic", content=content, size_hint=(0.8, 0.4), auto_dismiss=False)
+
+        btn_cancel.bind(on_release=popup.dismiss)
+
+        def save_topic(_):
+            new_topic = input_field.text.strip()
+            if new_topic:
+                app = App.get_running_app()
+                app.topic_controller.create_topic(new_topic)
+                self.on_open()
+                popup.dismiss()
+
+        btn_add.bind(on_release=save_topic)
+        popup.open()
