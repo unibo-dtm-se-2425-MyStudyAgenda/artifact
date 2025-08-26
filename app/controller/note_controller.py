@@ -1,7 +1,6 @@
 from db.note_dao import NoteDAO
 from model.note import Note
 from model.topic import Topic
-from datetime import datetime
 
 class NoteController:
     def __init__(self):
@@ -21,14 +20,17 @@ class NoteController:
     def delete_note(self, note_id: int):
         self.dao.delete_note(note_id)
 
-    def update_note(self, note_id: int, new_title: str, new_content: str):
-        self.dao.update_note(note_id, new_title, new_content)
+    def update_note(self, note_id: int, new_content: str):
+        self.dao.update_note(note_id, new_content)
 
     def _row_to_note(self, row):
+        topic_id = row[2] if row[2] is not None else None
+        topic = Topic(id=topic_id) if topic_id else None
+
         return Note(
             id=row[0],
             title=row[1],
-            topic=Topic(id=row[2]),
-            content=row[3],
-            created_at=datetime.fromisoformat(row[4])
+            topic=topic,
+            content=row[3]
         )
+
