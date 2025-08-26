@@ -9,23 +9,82 @@
         orientation: 'vertical'
         NavigationBar:
         BoxLayout:
-            orientation: 'vertical'
-            padding: '10dp'
-            spacing: '10dp'
-            Label:
-                text: 'Your Notes'
-                font_size: '20sp'
+            orientation: "vertical"
+            padding: 10
+            spacing: 10
+
+            Button:
+                text: "Create new note"
                 size_hint_y: None
-                height: self.texture_size[1] + 10
+                height: "40dp"
+                on_release: root.open_new_note_popup()
+
             ScrollView:
                 GridLayout:
-                    id: note_list
+                    id: notes_list
                     cols: 1
                     size_hint_y: None
                     height: self.minimum_height
-                    row_default_height: '80dp'
+                    spacing: 10
+                    padding: 5
+                    
+<AddNotePopup@Popup>:
+    title: "Create New Note"
+    size_hint: .9, .6
+    auto_dismiss: False
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 10
+
+        TextInput:
+            id: title_input
+            hint_text: "Title"
+            multiline: False
+
+        BoxLayout:
+            spacing: 5
+            Spinner:
+                id: topic_spinner
+                text: "Select topic"
+                values: []
             Button:
-                text: 'Add Note'
-                size_hint_y: None
-                height: '50dp'
-                on_release: print("Open add note editor")
+                text: "+"
+                size_hint_x: None
+                width: "40dp"
+                on_release: root.add_new_topic()
+
+        BoxLayout:
+            size_hint_y: None
+            height: '44dp'
+            spacing: 10
+
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
+
+            Button:
+                text: "Create"
+                on_release: root.create_note()
+
+<NotebookScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 10
+
+        TextInput:
+            id: content_input
+            multiline: True
+
+        BoxLayout:
+            size_hint_y: None
+            height: "40dp"
+            spacing: 10
+            Button:
+                text: "Save"
+                on_release: root.save_note()
+            Button:
+                text: "Back"
+                on_release: root.go_back()
