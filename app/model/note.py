@@ -4,9 +4,12 @@ from model.topic import Topic
 class Note:
     _id_counter = 1
 
-    def __init__(self, title: str, topic: Topic, content: str):
-        self.id = Note._id_counter
-        Note._id_counter += 1
+    def __init__(self, title: str, topic: Topic, content: str, id=None):
+        if id is not None:
+            self.id = id
+        else:
+            self.id = Note._id_counter
+            Note._id_counter += 1
 
         self.title = title
         self.topic = topic
