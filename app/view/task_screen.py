@@ -19,6 +19,34 @@ class TaskScreen(Screen):
         for task in tasks:
             task_item = TaskItem(task)
             self.ids.task_list.add_widget(task_item)
+    
+    def add_task_from_popup(self, desc, topic, prio, date, start, end, popup):
+        app = App.get_running_app()
+        if not desc or not topic or prio == "":
+            print("Missing required fields")
+            return
+
+        try:
+            prio = int(prio)
+        except ValueError:
+            print("Priority must be an integer")
+            return
+
+        task_id = app.task_controller.create_task(
+            description=desc,
+            topic_name=topic,
+            priority=prio,
+            date=date if date else None,
+            start_time=start if start else None,
+            end_time=end if end else None
+        )
+        print(f"Task created with ID: {task_id}")
+        popup.dismiss()
+    
+    def refresh_task_list(self):
+        app = App.get_running_app()
+        task_screen = app.sm.get_screen("tasks")
+        task_screen.load_tasks()
 
 
 class AddTaskPopup(Popup):
@@ -69,8 +97,10 @@ class AddTaskPopup(Popup):
         prio = priority_map.get(prio_label)
 
         app = App.get_running_app()
-        app.add_task_from_popup(desc, topic, prio, date, start, end, self)
-        app.refresh_task_list()
+        task_screen = app.sm.get_screen("tasks")
+
+        task_screen.add_task_from_popup(desc, topic, prio, date, start, end, self)
+        task_screen.refresh_task_list()
 
     def add_new_topic(self):
         from kivy.uix.textinput import TextInput

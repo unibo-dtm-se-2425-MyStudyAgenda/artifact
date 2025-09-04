@@ -38,6 +38,7 @@ class TaskItem(BoxLayout):
             return
 
         app = App.get_running_app()
+        task_screen = app.sm.get_screen("tasks")
         try:
             if value:
                 app.task_controller.mark_completed(int(self.task_id))
@@ -46,14 +47,15 @@ class TaskItem(BoxLayout):
         except Exception as e:
             print("Error updating completion status:", e)
 
-        Clock.schedule_once(lambda dt: app.refresh_task_list(), 0.0)
+        Clock.schedule_once(lambda dt: task_screen.refresh_task_list(), 0.0)
 
     def delete_task(self):
         app = App.get_running_app()
+        task_screen = app.sm.get_screen("tasks")
         try:
             app.task_controller.delete_task(int(self.task_id))
         finally:
-            Clock.schedule_once(lambda dt: app.refresh_task_list(), 0.0)
+            Clock.schedule_once(lambda dt: task_screen.refresh_task_list(), 0.0)
 
     def _to_date_text(self, v):
         if v is None:
@@ -128,4 +130,6 @@ class TaskItem(BoxLayout):
             self.end_time.strip()
         )
         popup.dismiss()
-        Clock.schedule_once(lambda dt: app.refresh_task_list(), 0.0)
+        
+        task_screen = app.sm.get_screen("tasks")
+        Clock.schedule_once(lambda dt: task_screen.refresh_task_list(), 0.0)

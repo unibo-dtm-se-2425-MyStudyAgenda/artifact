@@ -26,33 +26,6 @@ class MyStudyAgenda(MDApp):
         self.sm.add_widget(NotesScreen(name="notes"))
         self.sm.add_widget(NotebookScreen(name="notebook"))
         return self.sm
-    
-    def add_task_from_popup(self, desc, topic, prio, date, start, end, popup):
-        if not desc or not topic or prio == "":
-            print("Missing required fields")
-            return
-
-        try:
-            prio = int(prio)
-        except ValueError:
-            print("Priority must be an integer")
-            return
-
-        task_id = self.task_controller.create_task(
-            description=desc,
-            topic_name=topic,
-            priority=prio,
-            date=date if date else None,
-            start_time=start if start else None,
-            end_time=end if end else None
-        )
-        print(f"Task created with ID: {task_id}")
-        popup.dismiss()
-    
-    def refresh_task_list(self):
-        task_screen = self.sm.get_screen("tasks")
-        task_screen.load_tasks()
-
 
 if __name__ == "__main__":
     MyStudyAgenda().run()
