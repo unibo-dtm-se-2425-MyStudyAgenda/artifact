@@ -1,6 +1,7 @@
 from db.note_dao import NoteDAO
 from model.note import Note
 from model.topic import Topic
+from datetime import datetime
 
 class NoteController:
     def __init__(self):
@@ -27,10 +28,20 @@ class NoteController:
         topic_id = row[2] if row[2] is not None else None
         topic = Topic(id=topic_id) if topic_id else None
 
+        created_at = None
+        if row[4]:
+            try:
+                created_at = datetime.fromisoformat(row[4])
+            except Exception:
+                # fallback in case the result is different
+                created_at = datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S")
+
         return Note(
+            
             id=row[0],
             title=row[1],
             topic=topic,
-            content=row[3]
+            content=row[3],
+            created_at=created_at
         )
 
