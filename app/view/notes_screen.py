@@ -20,11 +20,11 @@ class NotesScreen(Screen):
 
         for note in notes:
             card = BoxLayout(orientation="vertical", size_hint_y=None, height=80, padding=5)
-            card.add_widget(Label(text=f"Title: {note.title}", halign="left", color=(0,0,0,1)))
+            card.add_widget(Label(text=f"Title: {note.title}", bold=True, halign="left", color=(0,0,0,1)))
             topic_name = app.topic_controller.get_topic_name(note.topic.id) if note.topic else "No topic"
-            card.add_widget(Label(text=f"Topic: {topic_name}", halign="left", color=(0,0,0,1)))
+            card.add_widget(Label(text=f"Topic: {topic_name}", halign="left", color=(0.2,0.2,0.2,1)))
             created_str = note.created_at.strftime("%Y-%m-%d")
-            card.add_widget(Label(text=f"Created: {created_str}", halign="left", color=(0,0,0,1)))
+            card.add_widget(Label(text=f"Created: {created_str}", halign="left", color=(0.2,0.2,0.2,1)))
 
             card.bind(on_touch_down=lambda instance, touch, n=note: 
                       self.open_notebook(n) if instance.collide_point(*touch.pos) else None)

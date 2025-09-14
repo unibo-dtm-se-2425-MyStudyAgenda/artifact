@@ -4,7 +4,7 @@
 
     canvas.before:
         Color:
-            rgba: 0, 0, 0, 1
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
@@ -13,34 +13,46 @@
         orientation: "vertical"
         padding: 10
         spacing: 10
+
         NavigationBar:
 
         BoxLayout:
             size_hint_y: None
             height: "50dp"
             spacing: 20
+
             Button:
                 text: "<"
                 on_release: root.previous_week()
+                background_normal: ""
+                background_color: 0.9, 0.9, 0.9, 1
+                color: 0, 0, 0, 1
+
             Label:
                 id: month_label
                 text: "Month Year"
                 font_size: 20
                 bold: True
                 halign: "center"
+                color: 0, 0, 0, 1
+
             Button:
                 text: ">"
                 on_release: root.next_week()
+                background_normal: ""
+                background_color: 0.9, 0.9, 0.9, 1
+                color: 0, 0, 0, 1
 
         ScrollView:
-            do_scroll_x: True
+            do_scroll_x: False
             do_scroll_y: True
 
             GridLayout:
                 id: planner_grid
                 cols: 8
-                size_hint: None, None
-                col_default_width: 210
-                col_force_default: True
-                width: self.col_default_width * self.cols
-                height: root.header_h + (root.hour_px * 24)
+                size_hint_y: None
+                height: self.minimum_height
+                size_hint_x: 1
+                col_force_default: False
+
+

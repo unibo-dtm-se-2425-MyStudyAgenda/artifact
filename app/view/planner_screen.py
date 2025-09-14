@@ -42,6 +42,13 @@ class PlannerScreen(Screen):
         if isinstance(value, time):
             return value
         return None
+    
+    @property
+    def col_default_width(self):
+        grid = self.ids.get("planner_grid")
+        if grid and grid.width > 0:
+            return grid.width / grid.cols
+        return 100  # fallback value
 
     def _time_to_y(self, t: time) -> float:
         return self.hour_px * (t.hour + t.minute / 60.0) + 30
@@ -78,21 +85,22 @@ class PlannerScreen(Screen):
                 text=text,
                 bold=True,
                 size_hint=(None, None),
-                size=(grid.col_default_width, self.header_h),
+                size=(self.col_default_width, self.header_h),
                 halign="center",
                 valign="middle",
+                color=(0, 0, 0, 1),
             )
             grid.add_widget(lbl)
 
         # time column
         total_height = self.hour_px * 24
-        time_col = FloatLayout(size_hint=(None, None), size=(grid.col_default_width, total_height))
+        time_col = FloatLayout(size_hint=(1/8, None), height=total_height)
         self._draw_time_ticks(time_col)
         grid.add_widget(time_col)
 
         # days columns, which will contain by default the lines representing the "grid" of the planner
         for i in range(7):
-            col = FloatLayout(size_hint=(None, None), size=(grid.col_default_width, total_height))
+            col = FloatLayout(size_hint=(1/8, None), height=total_height)
             with col.canvas.after:
                 Color(1, 1, 1, 0.15)
                 for h in range(0, 23, 2):
@@ -111,7 +119,7 @@ class PlannerScreen(Screen):
     def _redraw_day_grid(self, col):
         col.canvas.after.clear()
         with col.canvas.after:
-            Color(1, 1, 1, 0.12)
+            Color(0, 0, 0, 0.12)
             for h in range(0, 23, 2):
                 y = self._time_to_y(time(hour=h, minute=0))
                 y_coord = col.height - y
@@ -132,7 +140,7 @@ class PlannerScreen(Screen):
                 height=20,
                 halign="center",
                 valign="middle",
-                color=(1, 1, 1, 0.9),
+                color=(0, 0, 0, 1),
             )
             lbl.center_y = y_coord
             time_col.add_widget(lbl)
@@ -177,7 +185,7 @@ class PlannerScreen(Screen):
                     size_hint=(1, None),
                     height=task_height
                 )
-                task_box.pos = (day_index*grid.col_default_width, total_height - y1)
+                task_box.pos = ((day_index+1)*self.col_default_width, total_height - y1)
 
                 # the color of the rectangle changes based on its priority
                 task_color = (0.85,0,0,0.9) if task.priority == 3 else (1,0.65,0,0.9) if task.priority == 2 else (0,0.6,0,0.9)
@@ -193,7 +201,7 @@ class PlannerScreen(Screen):
                     color=(1, 1, 1, 1),
                 )
                 task_box.add_widget(lbl)
-                lbl.pos = (day_index*grid.col_default_width, total_height - y1)
+                lbl.pos = ((day_index+1)*self.col_default_width, total_height - y1)
 
                 col.add_widget(task_box)
 
