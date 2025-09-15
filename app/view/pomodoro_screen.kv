@@ -1,0 +1,106 @@
+<PomodoroScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        NavigationBar:
+
+        # Setup screen
+        BoxLayout:
+            id: setup_view
+            orientation: "vertical"
+            spacing: 15
+
+            FloatLayout:
+                size_hint_y: None
+                height: "40dp"
+                spacing: 10
+                padding: [50, 0]
+
+                Label:
+                    text: "Study (min):"
+                    font_size: 20
+                    color: 0, 0, 0, 1
+                    halign: "center"
+                    valign: "middle"
+                    width: 200
+                    size_hint_x: None
+                    text_size: self.size
+                    pos_hint: {"center_x": 0.4, "y": 0.9}
+
+                Spinner:
+                    id: study_spinner
+                    text: "25"
+                    values: [str(i) for i in range(5, 121, 5)]
+                    size_hint_x: None
+                    width: 100
+                    pos_hint: {"center_x": 0.6, "y": 0.9}
+
+            FloatLayout:
+                size_hint_y: None
+                height: "40dp"
+                spacing: 10
+                padding: [50, 0]
+
+                Label:
+                    text: "Break (min):"
+                    font_size: 20
+                    color: 0, 0, 0, 1
+                    halign: "center"
+                    valign: "middle"
+                    width: 200
+                    size_hint_x: None
+                    text_size: self.size
+                    pos_hint: {"center_x": 0.4, "y": 0.9}
+
+                Spinner:
+                    id: break_spinner
+                    text: "5"
+                    values: [str(i) for i in range(5, 61, 5)]
+                    size_hint_x: None
+                    width: 100
+                    pos_hint: {"center_x": 0.6, "y": 0.9}
+
+            FloatLayout:
+                size_hint_y: None
+                height: "48dp"
+                spacing: 10
+                padding: [50, 0]
+
+                MDRaisedButton:
+                    text: "Start"
+                    on_release: root.start_pomodoro()
+                    pos_hint: {"center_x": 0.45, "y": 0.9}
+
+                MDRaisedButton:
+                    text: "Reset"
+                    on_release: root.reset_pomodoro()
+                    pos_hint: {"center_x": 0.55, "y": 0.9}
+
+        # Timer screen
+        BoxLayout:
+            id: timer_view
+            orientation: "vertical"
+            spacing: 20
+            padding: [50, 0]
+            opacity: 0
+
+            FloatLayout:
+                Label:
+                    id: timer_label
+                    text: ""
+                    font_size: 200
+                    color: 0,0,0,1
+                    size_hint: None, None
+                    size: self.texture_size
+                    pos_hint: {"center_x": 0.5, "y": 0.7}
+            
+            FloatLayout:
+                MDRaisedButton:
+                    text: "Stop Session"
+                    size_hint_y: None
+                    md_bg_color: 1, 0, 0, 1
+                    height: "48dp"
+                    on_release: root.stop_session()
+                    pos_hint: {"center_x": 0.5, "y": 0.2}
