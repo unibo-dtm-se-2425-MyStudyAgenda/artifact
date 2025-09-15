@@ -1,3 +1,10 @@
+"""
+Represents a topic/category to which tasks or notes can be assigned
+Attributes:
+    id (int): Unique identifier of the topic
+    name (str): Name of the topic
+"""
+
 class Topic:
     _id_counter = 1
 
