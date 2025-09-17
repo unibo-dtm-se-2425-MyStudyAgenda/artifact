@@ -12,6 +12,7 @@ class NoteDAO:
             (note.title, note.topic.id if note.topic else None, note.content, note.created_at.isoformat())
         )
         self.db.commit()
+        return self.db.cursor.lastrowid
 
     def get_all_notes(self):
         self.db.cursor.execute("SELECT * FROM notes ORDER BY created_at DESC")

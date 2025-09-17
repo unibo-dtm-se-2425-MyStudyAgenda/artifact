@@ -18,14 +18,42 @@
             padding: 10
             spacing: 10
 
-            Button:
-                text: "Create new note"
+            Label:
+                text: "Your Notes"
+                font_size: 24
+                bold: True
+                color: 0, 0, 0, 1
                 size_hint_y: None
                 height: "40dp"
-                background_normal: ""
-                background_color: 0.49, 0.71, 0.84, 1
-                color: 1, 1, 1, 1
-                on_release: root.open_new_note_popup()
+
+            GridLayout:
+                cols: 6
+                size_hint_y: None
+                height: "40dp"
+                padding: [5, 0]
+                spacing: 12
+
+                Label:
+                    text: "Title"
+                    bold: True
+                    font_size: 20
+                    color: 0, 0, 0, 1
+                Label:
+                    text: "Topic"
+                    bold: True
+                    font_size: 20
+                    color: 0, 0, 0, 1
+                Label:
+                    text: "Creation date"
+                    bold: True
+                    font_size: 20
+                    color: 0, 0, 0, 1
+                Label:
+                    text: ""
+                Label:
+                    text: ""
+                Label:
+                    text: ""
 
             ScrollView:
                 do_scroll_x: False
@@ -39,6 +67,15 @@
                     height: self.minimum_height
                     spacing: 10
                     padding: 5
+        
+            Button:
+                text: "Create new note"
+                size_hint_y: None
+                height: "40dp"
+                background_normal: ""
+                background_color: 0.49, 0.71, 0.84, 1
+                color: 1, 1, 1, 1
+                on_release: root.open_new_note_popup()
 
 <SpinnerOption>:
     background_normal: ""

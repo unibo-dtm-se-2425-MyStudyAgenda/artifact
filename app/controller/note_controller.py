@@ -8,7 +8,7 @@ class NoteController:
         self.dao = NoteDAO()
 
     def create_note(self, note: Note):
-        self.dao.insert_note(note)
+        return self.dao.insert_note(note)
 
     def get_all_notes(self):
         rows = self.dao.get_all_notes()

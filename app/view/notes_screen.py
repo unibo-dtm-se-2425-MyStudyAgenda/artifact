@@ -1,35 +1,22 @@
 from kivy.uix.screenmanager import Screen
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.app import App
 from model.note import Note
 from model.topic import Topic
 from view.add_topic_popup import AddTopicPopup
+from view.note_item import NoteItem
 
 class NotesScreen(Screen):
     def on_enter(self):
         self.load_notes()
 
     def load_notes(self):
-        notes_list = self.ids.notes_list
-        notes_list.clear_widgets()
-
         app = App.get_running_app()
+        self.ids.notes_list.clear_widgets()
         notes = app.note_controller.get_all_notes()
-
         for note in notes:
-            card = BoxLayout(orientation="vertical", size_hint_y=None, height=80, padding=5)
-            card.add_widget(Label(text=f"Title: {note.title}", bold=True, halign="left", color=(0,0,0,1)))
-            topic_name = app.topic_controller.get_topic_name(note.topic.id) if note.topic else "No topic"
-            card.add_widget(Label(text=f"Topic: {topic_name}", halign="left", color=(0.2,0.2,0.2,1)))
-            created_str = note.created_at.strftime("%Y-%m-%d")
-            card.add_widget(Label(text=f"Created: {created_str}", halign="left", color=(0.2,0.2,0.2,1)))
-
-            card.bind(on_touch_down=lambda instance, touch, n=note: 
-                      self.open_notebook(n) if instance.collide_point(*touch.pos) else None)
-
-            notes_list.add_widget(card)
+            note_item = NoteItem(note)
+            self.ids.notes_list.add_widget(note_item)
 
     def open_new_note_popup(self):
         popup = AddNotePopup()
@@ -39,6 +26,11 @@ class NotesScreen(Screen):
         screen = self.manager.get_screen("notebook")
         screen.open_note(note.id)
         self.manager.current = "notebook"
+    
+    def refresh_note_list(self):
+        app = App.get_running_app()
+        notes_screen = app.sm.get_screen("notes")
+        notes_screen.load_notes()
 
 class AddNotePopup(Popup):
     def on_open(self):
@@ -66,15 +58,14 @@ class AddNotePopup(Popup):
                 topic=Topic(id=topic_id) if topic_id else None,
                 content=""
             )
-            app.note_controller.create_note(note)
+            note_id = app.note_controller.create_note(note)  # ottieni l’ID corretto
 
             self.dismiss()
 
-            # takes the last note created and opens it
-            last_note = app.note_controller.get_all_notes()[-1]
             notebook = app.root.get_screen("notebook")
-            notebook.open_note(last_note.id)
+            notebook.open_note(note_id)
             app.root.current = "notebook"
+
 
 class NotebookScreen(Screen):
     current_note_id = None

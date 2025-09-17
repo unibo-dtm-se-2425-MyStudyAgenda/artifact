@@ -12,9 +12,10 @@ from controller.note_controller import NoteController
 
 Builder.load_file("view/nav_bar.kv")
 Builder.load_file("view/task_screen.kv")
+Builder.load_file("view/task_item.kv")
 Builder.load_file("view/planner_screen.kv")
 Builder.load_file("view/notes_screen.kv")
-Builder.load_file("view/task_item.kv")
+Builder.load_file("view/note_item.kv")
 Builder.load_file("view/add_topic_popup.kv")
 Builder.load_file("view/pomodoro_screen.kv")
 

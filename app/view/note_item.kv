@@ -1,0 +1,56 @@
+<NoteItem>:
+    size_hint_y: None
+    height: self.minimum_height
+    padding: 10
+    spacing: 12
+    canvas.before:
+        Color:
+            rgba: 0.96, 0.96, 0.96, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        cols: 6
+        size_hint_y: None
+        height: self.minimum_height
+        width: self.parent.width if self.parent else 1
+        spacing: 15
+
+        Label:
+            text: root.title
+            color: 0, 0, 0, 1
+            text_size: self.size
+            halign: "center"
+            valign: "middle"
+            size_hint_x: 1
+
+        Label:
+            text: root.topic
+            color: 0, 0, 0, 1
+            text_size: self.size
+            halign: "center"
+            valign: "middle"
+            size_hint_x: 1
+
+        Label:
+            text: root.created_at if root.created_at else ""
+            color: 0, 0, 0, 1
+            text_size: self.size
+            halign: "center"
+            valign: "middle"
+            size_hint_x: 1
+
+        Label:
+            text: ""
+
+        MDRaisedButton:
+            text: "Open"
+            on_release: root.open_note()
+            size_hint_x: 1
+
+        MDRaisedButton:
+            text: "Delete"
+            md_bg_color: 1, 0, 0, 1
+            on_release: root.delete_note()
+            size_hint_x: 1
