@@ -10,24 +10,32 @@
         BoxLayout:
             id: setup_view
             orientation: "vertical"
-            spacing: 15
+            spacing: 20
+            padding: [50, 50]
+            size_hint_y: None
+            height: self.minimum_height
 
-            FloatLayout:
+            GridLayout:
+                cols: 4
                 size_hint_y: None
-                height: "40dp"
-                spacing: 10
-                padding: [50, 0]
+                height: self.minimum_height
+                row_default_height: "40dp"
+                row_force_default: True
+                #col_default_width: "200dp"
+                #col_force_default: False
+                spacing: 20
+
+                Label:
+                    text: ""
 
                 Label:
                     text: "Study (min):"
                     font_size: 20
                     color: 0, 0, 0, 1
-                    halign: "center"
+                    halign: "left"
                     valign: "middle"
-                    width: 200
-                    size_hint_x: None
+                    size_hint_x: 1
                     text_size: self.size
-                    pos_hint: {"center_x": 0.4, "y": 0.9}
 
                 Spinner:
                     id: study_spinner
@@ -35,24 +43,21 @@
                     values: [str(i) for i in range(5, 121, 5)]
                     size_hint_x: None
                     width: 100
-                    pos_hint: {"center_x": 0.6, "y": 0.9}
+                
+                Label:
+                    text: ""
 
-            FloatLayout:
-                size_hint_y: None
-                height: "40dp"
-                spacing: 10
-                padding: [50, 0]
+                Label:
+                    text: ""
 
                 Label:
                     text: "Break (min):"
                     font_size: 20
                     color: 0, 0, 0, 1
-                    halign: "center"
+                    halign: "left"
                     valign: "middle"
-                    width: 200
-                    size_hint_x: None
+                    size_hint_x: 1
                     text_size: self.size
-                    pos_hint: {"center_x": 0.4, "y": 0.9}
 
                 Spinner:
                     id: break_spinner
@@ -60,23 +65,31 @@
                     values: [str(i) for i in range(5, 61, 5)]
                     size_hint_x: None
                     width: 100
-                    pos_hint: {"center_x": 0.6, "y": 0.9}
+                
+                Label:
+                    text: ""
 
-            FloatLayout:
-                size_hint_y: None
-                height: "48dp"
-                spacing: 10
-                padding: [50, 0]
-
-                MDRaisedButton:
-                    text: "Start"
-                    on_release: root.start_pomodoro()
-                    pos_hint: {"center_x": 0.45, "y": 0.9}
+                Label:
+                    text: ""
 
                 MDRaisedButton:
                     text: "Reset"
                     on_release: root.reset_pomodoro()
-                    pos_hint: {"center_x": 0.55, "y": 0.9}
+                    font_size: 24
+                    md_bg_color: 1, 0.7, 0, 1
+                    size_hint: None, None
+                    size: 120, 50
+
+                MDRaisedButton:
+                    text: "Start"
+                    on_release: root.start_pomodoro()
+                    font_size: 24
+                    size_hint: None, None
+                    size: 120, 50
+
+                Label:
+                    text: ""
+
 
         # Timer screen
         BoxLayout:
