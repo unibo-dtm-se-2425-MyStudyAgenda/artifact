@@ -25,13 +25,3 @@ class TopicDAO:
         # Retrieves a topic by its name
         self.db.cursor.execute("SELECT * FROM topics WHERE name = ?", (name,))
         return self.db.cursor.fetchone()
-
-    """def delete_topic(self, topic_id: int):
-        # Deletes an existing topic from the database by its unique ID
-        self.db.cursor.execute("DELETE FROM topics WHERE id = ?", (topic_id,))
-        self.db.commit()
-
-    def update_topic_name(self, topic_id: int, new_name: str):
-        # Updates the name of a topic by its ID
-        self.db.cursor.execute("UPDATE topics SET name = ? WHERE id = ?", (new_name, topic_id))
-        self.db.commit()"""

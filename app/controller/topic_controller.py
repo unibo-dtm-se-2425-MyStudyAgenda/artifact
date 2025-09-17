@@ -23,12 +23,6 @@ class TopicController:
             return Topic(id=row[0], name=row[1])
         return None
 
-    def delete_topic(self, topic_id: int):
-        self.dao.delete_topic(topic_id)
-
-    def update_topic_name(self, topic_id: int, new_name: str):
-        self.dao.update_topic_name(topic_id, new_name)
-
     def get_topic_id(self, name: str) -> int | None:
         row = self.dao.get_topic_by_name(name)
         return row[0] if row else None
