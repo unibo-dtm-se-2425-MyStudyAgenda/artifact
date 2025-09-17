@@ -3,6 +3,7 @@ import sqlite3
 class Database:
     _instance = None
 
+    # Initialize connection to the SQLite database
     def __init__(self, db_name="planner.db"):
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
@@ -41,9 +42,11 @@ class Database:
 
         self.connection.commit()
 
+    # Commit pending transactions to the database
     def commit(self):
         self.connection.commit()
 
+    # Close the database connection
     def close(self):
         self.connection.close()
 
@@ -51,4 +54,5 @@ class Database:
     def get_instance(cls):
         if cls._instance is None:
             cls._instance = Database()
+        # Return the singleton instance of the Database
         return cls._instance
