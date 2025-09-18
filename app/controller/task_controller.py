@@ -14,42 +14,6 @@ class TaskController:
          # Insert a new task into the database
         return self.dao.insert_task(task)
 
-    """def create_task(self, description, topic_name, priority, date=None, start_time=None, end_time=None):
-        # Create a new Task object and insert it into the database
-        # Handles topic lookup and conversion of date/time strings
-
-        topic_obj = self.topic_controller.get_topic_by_name(topic_name)
-        if not topic_obj:
-            raise ValueError(f"Topic '{topic_name}' non trovato")
-
-        if isinstance(date, str) and date.strip():
-            date = datetime.strptime(date, "%Y-%m-%d").date()
-        else:
-            date = None
-
-        if isinstance(start_time, str) and start_time.strip():
-            start_time = datetime.strptime(start_time, "%H:%M").time()
-        else:
-            start_time = None
-
-        if isinstance(end_time, str) and end_time.strip():
-            end_time = datetime.strptime(end_time, "%H:%M").time()
-        else:
-            end_time = None
-
-        task = Task(
-            description=description,
-            topic=topic_obj,
-            priority=priority,
-            scheduled_date=date,
-            start_time=start_time,
-            end_time=end_time
-        )
-
-        task_id = self.dao.insert_task(task)
-        task.task_id = task_id
-        return task_id"""
-
     def get_all_tasks(self):
         # Retrieve all tasks from the database and map them to Task objects
         tasks_data = self.dao.get_all_tasks()
