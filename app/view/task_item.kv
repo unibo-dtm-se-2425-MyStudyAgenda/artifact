@@ -98,8 +98,17 @@
             background_color: 1, 1, 1, 1
             background_normal: ""
             on_release: root.open_time_picker("end", self)
+        
+        Label:
+            id: error_label
+            text: ""
+            color: 1, 0, 0, 1
+            font_size: 16
+            size_hint_y: None
+            height: "20dp"
 
         Button:
+            id: save_btn
             text: "Save"
             background_color: 0.13, 0.59, 0.95, 1
             background_normal: ""

@@ -92,6 +92,30 @@ class SchedulePopup(Popup):
             self.task_item.end_time = formatted
             button.text = f"End: {self.task_item.end_time}"
 
+        self.validate_times()
+
+    def validate_times(self):
+        if self.task_item.start_time and self.task_item.end_time:
+            from datetime import datetime
+            fmt = "%H:%M"
+
+            try:
+                start_dt = datetime.strptime(self.task_item.start_time, fmt)
+                end_dt = datetime.strptime(self.task_item.end_time, fmt)
+            except ValueError:
+                self.ids.error_label.text = "Invalid time format"
+                self.ids.save_btn.disabled = True
+                return
+
+            if end_dt <= start_dt:
+                self.ids.error_label.text = "End time must be later than start time"
+                self.ids.save_btn.disabled = True
+                return
+
+        self.ids.error_label.text = ""
+        self.ids.save_btn.disabled = False
+
+
     def save_schedule(self):
         app = App.get_running_app()
         app.task_controller.set_time_slot(

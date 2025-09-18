@@ -93,6 +93,29 @@ class AddTaskPopup(Popup):
             self.end_time = formatted
             self.ids.end_btn.text = f"End: {formatted}"
 
+        self.validate_times()
+
+    def validate_times(self):
+        if self.start_time and self.end_time:
+            from datetime import datetime
+            fmt = "%H:%M"
+            try:
+                start_dt = datetime.strptime(self.start_time, fmt)
+                end_dt = datetime.strptime(self.end_time, fmt)
+            except ValueError:
+                self.ids.error_label.text = "Invalid time format"
+                self.ids.add_btn.disabled = True
+                return
+
+            if end_dt <= start_dt:
+                self.ids.error_label.text = "End time must be later than start time"
+                self.ids.add_btn.disabled = True
+                return
+
+        self.ids.error_label.text = ""
+        self.ids.add_btn.disabled = False
+
+
     def add_task(self):
         desc = self.ids.desc_input.text.strip()
         topic = self.ids.topic_spinner.text.strip()
