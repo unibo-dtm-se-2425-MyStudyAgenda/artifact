@@ -1,14 +1,12 @@
 from db.task_dao import TaskDAO
 from model.task import Task
 from model.topic import Topic
-#from controller.topic_controller import TopicController
 from datetime import date, time
 
 class TaskController:
     def __init__(self):
         # Initialize DAO and TopicController for database interaction
         self.dao = TaskDAO()
-        #self.topic_controller = TopicController()
     
     def create_task(self, task: Task):
          # Insert a new task into the database
