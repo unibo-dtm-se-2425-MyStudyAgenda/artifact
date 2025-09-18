@@ -4,6 +4,8 @@ from kivy.uix.popup import Popup
 from view.task_item import TaskItem
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 from view.add_topic_popup import AddTopicPopup
+from model.task import Task
+from model.topic import Topic
 
 class TaskScreen(Screen):
     def open_add_task_popup(self):
@@ -21,26 +23,32 @@ class TaskScreen(Screen):
             task_item = TaskItem(task)
             self.ids.task_list.add_widget(task_item)
     
-    def add_task_from_popup(self, desc, topic, prio, date, start, end, popup):
+    def add_task_from_popup(self, desc, topic_name, prio, date, start, end, popup):
         app = App.get_running_app()
-        if not desc or not topic or prio == "":
+        if not desc or not topic_name or prio == "":
             print("Missing required fields")
             return
+        
+        if topic_name != "Select topic":
+            topic_id = app.topic_controller.get_topic_id(topic_name)
 
         try:
             prio = int(prio)
         except ValueError:
             print("Priority must be an integer")
             return
-
-        task_id = app.task_controller.create_task(
+        
+        task = Task(
+            task_id = None,
             description=desc,
-            topic_name=topic,
+            topic=Topic(id=topic_id) if topic_id else None,
             priority=prio,
-            date=date if date else None,
+            is_completed=False,
+            scheduled_date=date if date else None,
             start_time=start if start else None,
             end_time=end if end else None
-        )
+            )
+        task_id = app.task_controller.create_task(task)
         print(f"Task created with ID: {task_id}")
         popup.dismiss()
     
