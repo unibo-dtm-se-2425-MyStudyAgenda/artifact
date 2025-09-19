@@ -16,10 +16,10 @@ class TaskDAO:
                 task.topic.id,
                 task.priority,
                 task.is_completed,
-                # Converts datetime fields (scheduled_date, start_time, end_time) to ISO string format
-                task.scheduled_date.isoformat() if task.scheduled_date else None,
-                task.start_time.isoformat() if task.start_time else None,
-                task.end_time.isoformat() if task.end_time else None
+                # Converts datetime fields (scheduled_date, start_time, end_time) to string format
+                task.scheduled_date.format() if task.scheduled_date else None,
+                task.start_time.format() if task.start_time else None,
+                task.end_time.format() if task.end_time else None
             )
         )
         self.db.commit()
