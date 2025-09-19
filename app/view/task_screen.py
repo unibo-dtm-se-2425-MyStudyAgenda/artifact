@@ -31,7 +31,7 @@ class TaskScreen(Screen):
     def add_task_from_popup(self, desc, topic_name, prio, date, start, end, popup):
         # Handle task creation from the popup input fields
         app = App.get_running_app()
-        if not desc: # or not topic_name or prio == "":
+        if not desc:
             print("Missing required fields")
             return
         
@@ -111,9 +111,29 @@ class AddTaskPopup(Popup):
             self.ids.end_btn.text = f"End: {formatted}"
 
         # Validate times after every change
-        self.validate_times()
+        self.validate_inputs()
 
-    def validate_times(self):
+    def validate_inputs(self):
+        # Validate description, priority and time consistency
+
+        # Check description
+        if not self.ids.desc_input.text.strip():
+            self.ids.error_label.text = "Description cannot be empty"
+            self.ids.add_btn.disabled = True
+            return
+
+        # Check priority
+        # Ensure that a priority is selected before saving
+        prio_label = self.ids.priority_spinner.text.strip()
+        if prio_label not in {"Low", "Medium", "High"}:
+            self.ids.error_label.text = "Please select a priority"
+            self.ids.add_btn.disabled = True
+            self.prio_valid = False
+            return
+
+        self.prio_valid = True
+
+        # Check time
         # Ensure that end time is later than start time, otherwise disable save
         if self.start_time and self.end_time:
             from datetime import datetime
@@ -131,21 +151,7 @@ class AddTaskPopup(Popup):
                 self.ids.add_btn.disabled = True
                 return
 
-        # If valid, enable save (priority check will also apply)
-        self.ids.error_label.text = ""
-        self.validate_priority()
-
-    def validate_priority(self):
-        # Ensure that a priority is selected before saving
-        prio_label = self.ids.priority_spinner.text.strip()
-        if prio_label not in {"Low", "Medium", "High"}:
-            self.ids.error_label.text = "Please select a priority"
-            self.ids.add_btn.disabled = True
-            self.prio_valid = False
-            return
-
-        # If valid, enable save
-        self.prio_valid = True
+        # If everything is valid
         self.ids.error_label.text = ""
         self.ids.add_btn.disabled = False
 
@@ -172,6 +178,11 @@ class AddTaskPopup(Popup):
 
         task_screen.add_task_from_popup(desc, topic, prio, date, start, end, self)
         task_screen.refresh_task_list()
+
+        self.validate_inputs()
+        # blocks saving if sme input is invalid
+        if self.ids.add_btn.disabled:
+            return  
 
     def add_new_topic(self):
         # Open a popup to create a new topic directly from the task popup

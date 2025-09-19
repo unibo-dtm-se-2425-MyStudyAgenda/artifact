@@ -94,6 +94,7 @@
             multiline: False
             foreground_color: 0, 0, 0, 1
             background_color: 1, 1, 1, 1
+            on_text: root.validate_inputs()
 
         BoxLayout:
             spacing: 5
@@ -117,7 +118,7 @@
             values: ["Low", "Medium", "High"]
             background_normal: ""
             background_color: 0.49, 0.71, 0.84, 1
-            on_text: root.validate_priority()
+            on_text: root.validate_inputs()
 
         Button:
             id: date_btn
