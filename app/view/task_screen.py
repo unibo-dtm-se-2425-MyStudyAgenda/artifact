@@ -31,11 +31,12 @@ class TaskScreen(Screen):
     def add_task_from_popup(self, desc, topic_name, prio, date, start, end, popup):
         # Handle task creation from the popup input fields
         app = App.get_running_app()
-        if not desc or not topic_name or prio == "":
+        if not desc: # or not topic_name or prio == "":
             print("Missing required fields")
             return
         
-        if topic_name != "Select topic":
+        topic_id = None
+        if topic_name and topic_name != "Select topic":
             topic_id = app.topic_controller.get_topic_id(topic_name)
 
         try:

@@ -13,7 +13,7 @@ class TaskDAO:
             VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (
                 task.description,
-                task.topic.id,
+                task.topic.id if task.topic else None,
                 task.priority,
                 task.is_completed,
                 # Converts datetime fields (scheduled_date, start_time, end_time) to string format
