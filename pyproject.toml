@@ -1,0 +1,23 @@
+[project]
+name = "mystudyagenda"
+version = "0.1.0"
+description = "Desktop application to plan daily tasks, write notes, view planner and set pomodoro timer"
+authors = [
+    {name = "Anna Campagna",email = "anna.campagna13@icloud.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "kivy (>=2.3.1,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=8.4.2,<9.0.0)"
+]
