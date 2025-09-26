@@ -2,13 +2,13 @@ from datetime import date, time
 from app.model.topic import Topic
 
 class Task:
-    id_counter = 1
+    _id_counter = 1
 
     def __init__(self, description: str, topic: Topic, priority: int, is_completed: bool = False,
                  scheduled_date: date = None, start_time: time = None, end_time: time = None):
         
-        self.id = Task.id_counter
-        Task.id_counter += 1
+        self.id = Task._id_counter
+        Task._id_counter += 1
 
         self.description = description
         self.topic = topic
