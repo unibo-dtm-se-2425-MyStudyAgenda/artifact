@@ -40,4 +40,5 @@ jobs:
         run: poetry install --no-root
 
       - name: Run tests
-        run: poetry run pytest --maxfail=1 --disable-warnings -q
+        shell: bash
+        run: PYTHONPATH=. poetry run pytest --maxfail=1 --disable-warnings -q
