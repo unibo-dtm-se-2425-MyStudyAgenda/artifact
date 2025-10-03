@@ -17,6 +17,10 @@ class TopicDAO:
         self.db.cursor.execute("SELECT * FROM topics WHERE id = ?", (topic_id,))
         return self.db.cursor.fetchone()
 
+    def get_topic_by_name(self, name):
+        self.db.cursor.execute("SELECT * FROM topics WHERE name = ?", (name,))
+        return self.db.cursor.fetchone()
+
     def delete_topic(self, topic_id: int):
         self.db.cursor.execute("DELETE FROM topics WHERE id = ?", (topic_id,))
         self.db.commit()
