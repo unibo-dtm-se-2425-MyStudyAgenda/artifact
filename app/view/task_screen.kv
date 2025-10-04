@@ -22,4 +22,64 @@
                 text: 'Add Task'
                 size_hint_y: None
                 height: '50dp'
-                on_release: print("Open add task popup")
+                on_release: root.open_add_task_popup()
+
+<AddTaskPopup@Popup>:
+    title: "Add Task"
+    size_hint: .9, .9
+    auto_dismiss: False
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 10
+
+        TextInput:
+            id: desc_input
+            hint_text: "Description"
+            multiline: False
+
+        BoxLayout:
+            spacing: 5
+            Spinner:
+                id: topic_spinner
+                text: "Select topic"
+                values: []
+            Button:
+                text: "+"
+                size_hint_x: None
+                width: "40dp"
+                on_release: root.add_new_topic()
+
+        Spinner:
+            id: priority_spinner
+            text: "Select priority"
+            values: ["Low", "Medium", "High"]
+
+        TextInput:
+            id: date_input
+            hint_text: "Scheduled Date (YYYY-MM-DD)"
+            multiline: False
+
+        TextInput:
+            id: start_time_input
+            hint_text: "Start Time (HH:MM)"
+            multiline: False
+
+        TextInput:
+            id: end_time_input
+            hint_text: "End Time (HH:MM)"
+            multiline: False
+
+        BoxLayout:
+            size_hint_y: None
+            height: '44dp'
+            spacing: 10
+
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
+
+            Button:
+                text: "Add"
+                on_release: root.add_task()
