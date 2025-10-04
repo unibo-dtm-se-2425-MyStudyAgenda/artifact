@@ -1,0 +1,40 @@
+<NavigationBar@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '50dp'
+    spacing: '10dp'
+    padding: '10dp'
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Button:
+        text: 'Tasks'
+        on_release: app.root.current = 'tasks'
+        background_normal: ""
+        background_color: 1, 1, 0.3, 0.5
+        color: 0, 0, 0, 1
+
+    Button:
+        text: 'Planner'
+        on_release: app.root.current = 'planner'
+        background_normal: ""
+        background_color: 1, 1, 0.3, 0.5
+        color: 0, 0, 0, 1
+
+    Button:
+        text: 'Notes'
+        on_release: app.root.current = 'notes'
+        background_normal: ""
+        background_color: 1, 1, 0.3, 0.5
+        color: 0, 0, 0, 1
+    
+    Button:
+        text: 'Pomodoro Timer'
+        on_release: app.root.current = 'pomodoro'
+        background_normal: ""
+        background_color: 1, 1, 0.3, 0.5
+        color: 0, 0, 0, 1

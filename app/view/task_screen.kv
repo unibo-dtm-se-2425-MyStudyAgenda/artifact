@@ -1,0 +1,25 @@
+<TaskScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        NavigationBar:
+        BoxLayout:
+            orientation: 'vertical'
+            padding: '10dp'
+            spacing: '10dp'
+            Label:
+                text: 'Your Tasks'
+                font_size: '20sp'
+                size_hint_y: None
+                height: self.texture_size[1] + 10
+            ScrollView:
+                GridLayout:
+                    id: task_list
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    row_default_height: '60dp'
+            Button:
+                text: 'Add Task'
+                size_hint_y: None
+                height: '50dp'
+                on_release: print("Open add task popup")
