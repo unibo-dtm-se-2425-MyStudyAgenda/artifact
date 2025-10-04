@@ -20,11 +20,3 @@ class TopicDAO:
     def get_topic_by_name(self, name):
         self.db.cursor.execute("SELECT * FROM topics WHERE name = ?", (name,))
         return self.db.cursor.fetchone()
-
-    def delete_topic(self, topic_id: int):
-        self.db.cursor.execute("DELETE FROM topics WHERE id = ?", (topic_id,))
-        self.db.commit()
-
-    def update_topic_name(self, topic_id: int, new_name: str):
-        self.db.cursor.execute("UPDATE topics SET name = ? WHERE id = ?", (new_name, topic_id))
-        self.db.commit()
