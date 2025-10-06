@@ -1,4 +1,4 @@
-from kivy.app import App
+from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
 from kivy.lang import Builder
 from app.view.task_screen import TaskScreen
@@ -16,7 +16,7 @@ Builder.load_file("view/notes_screen.kv")
 Builder.load_file("view/pomodoro_screen.kv")
 Builder.load_file("view/task_item.kv")
 
-class MyStudyAgenda(App):
+class MyStudyAgenda(MDApp):
     def build(self):
         self.topic_controller = TopicController()
         self.task_controller = TaskController()
