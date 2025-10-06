@@ -4,6 +4,7 @@ from kivy.uix.popup import Popup
 from app.model.task import Task
 from app.model.topic import Topic
 from app.view.task_item import TaskItem
+from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 
 class TaskScreen(Screen):
     def open_add_task_popup(self):
@@ -58,19 +59,48 @@ class TaskScreen(Screen):
         task_screen.load_tasks()
 
 class AddTaskPopup(Popup):
+    selected_date = ""
+    start_time = ""
+    end_time = ""
+
     def on_open(self):
         app = App.get_running_app()
         topics = app.topic_controller.get_all_topics()
         topic_names = [t["name"] if isinstance(t, dict) else t.name for t in topics]
         self.ids.topic_spinner.values = topic_names
+    
+    def open_date_picker(self):
+        date_dialog = MDDatePicker()
+        date_dialog.bind(on_save=self.set_date)
+        date_dialog.open()
+
+    def set_date(self, instance, value, date_range=None):
+        formatted = value.isoformat()
+        self.selected_date = formatted
+        self.ids.date_btn.text = f"Date: {formatted}"
+
+
+    def open_time_picker(self, mode):
+        time_dialog = MDTimePicker()
+        time_dialog.bind(time=lambda inst, time: self.set_time(mode, time))
+        time_dialog.open()
+
+    def set_time(self, mode, time):
+        formatted = time.strftime("%H:%M")
+        if mode == "start":
+            self.start_time = formatted
+            self.ids.start_btn.text = f"Start: {formatted}"
+        else:
+            self.end_time = formatted
+            self.ids.end_btn.text = f"End: {formatted}"
 
     def add_task(self):
         desc = self.ids.desc_input.text.strip()
         topic = self.ids.topic_spinner.text.strip()
         prio_label = self.ids.priority_spinner.text.strip()
-        date = self.ids.date_input.text.strip() if self.ids.date_input else ""
-        start = self.ids.start_time_input.text.strip() if self.ids.start_time_input.text else ""
-        end = self.ids.end_time_input.text.strip() if self.ids.end_time_input.text else ""
+        date = self.selected_date if hasattr(self, "selected_date") else None
+        start = self.start_time if hasattr(self, "start_time") else None
+        end = self.end_time if hasattr(self, "end_time") else None
 
         priority_map = {"Low": 1, "Medium": 2, "High": 3}
         prio = priority_map.get(prio_label)

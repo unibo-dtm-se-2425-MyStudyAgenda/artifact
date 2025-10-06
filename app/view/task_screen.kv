@@ -86,21 +86,21 @@
             text: "Select priority"
             values: ["Low", "Medium", "High"]
 
-        TextInput:
-            id: date_input
-            hint_text: "Scheduled Date (YYYY-MM-DD)"
-            multiline: False
+        Button:
+            id: date_btn
+            text: "Select Date"
+            on_release: root.open_date_picker()
 
-        TextInput:
-            id: start_time_input
-            hint_text: "Start Time (HH:MM)"
-            multiline: False
+        Button:
+            id: start_btn
+            text: "Select Start Time"
+            on_release: root.open_time_picker("start")
 
-        TextInput:
-            id: end_time_input
-            hint_text: "End Time (HH:MM)"
-            multiline: False
-
+        Button:
+            id: end_btn
+            text: "Select End Time"
+            on_release: root.open_time_picker("end")
+            
         BoxLayout:
             size_hint_y: None
             height: '44dp'
