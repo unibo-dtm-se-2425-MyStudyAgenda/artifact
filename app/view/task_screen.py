@@ -3,11 +3,23 @@ from kivy.app import App
 from kivy.uix.popup import Popup
 from app.model.task import Task
 from app.model.topic import Topic
+from app.view.task_item import TaskItem
 
 class TaskScreen(Screen):
     def open_add_task_popup(self):
         popup = AddTaskPopup()
         popup.open()
+    
+    def on_enter(self):
+        self.load_tasks()
+
+    def load_tasks(self):
+        app = App.get_running_app()
+        self.ids.task_list.clear_widgets()
+        tasks = app.task_controller.get_all_tasks()
+        for task in tasks:
+            task_item = TaskItem(task)
+            self.ids.task_list.add_widget(task_item)
     
     def add_task_from_popup(self, desc, topic_name, prio, date, start, end, popup):
         app = App.get_running_app()
@@ -40,6 +52,11 @@ class TaskScreen(Screen):
         print(f"Task created with ID: {task_id}")
         popup.dismiss()
 
+    def refresh_task_list(self):
+        app = App.get_running_app()
+        task_screen = app.sm.get_screen("tasks")
+        task_screen.load_tasks()
+
 class AddTaskPopup(Popup):
     def on_open(self):
         app = App.get_running_app()
@@ -51,16 +68,17 @@ class AddTaskPopup(Popup):
         desc = self.ids.desc_input.text.strip()
         topic = self.ids.topic_spinner.text.strip()
         prio_label = self.ids.priority_spinner.text.strip()
-        date = self.ids.date_input.text.strip()
-        start = self.ids.start_time_input.text.strip()
-        end = self.ids.end_time_input.text.strip()
+        date = self.ids.date_input.text.strip() if self.ids.date_input else ""
+        start = self.ids.start_time_input.text.strip() if self.ids.start_time_input.text else ""
+        end = self.ids.end_time_input.text.strip() if self.ids.end_time_input.text else ""
 
         priority_map = {"Low": 1, "Medium": 2, "High": 3}
-        prio = priority_map.get(prio_label, 1)
+        prio = priority_map.get(prio_label)
 
         app = App.get_running_app()
         task_screen = app.sm.get_screen("tasks")
         task_screen.add_task_from_popup(desc, topic, prio, date, start, end, self)
+        task_screen.refresh_task_list()
 
     def add_new_topic(self):
         from kivy.uix.textinput import TextInput

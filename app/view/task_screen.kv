@@ -3,21 +3,51 @@
         orientation: 'vertical'
         NavigationBar:
         BoxLayout:
-            orientation: 'vertical'
-            padding: '10dp'
-            spacing: '10dp'
+            orientation: "vertical"
+            padding: 10
+            spacing: 10
+
             Label:
-                text: 'Your Tasks'
-                font_size: '20sp'
+                text: "Your Tasks"
+                font_size: 24
+                bold: True
                 size_hint_y: None
-                height: self.texture_size[1] + 10
+                height: "40dp"
+
+            GridLayout:
+                cols: 6
+                size_hint_y: None
+                height: "40dp"
+                padding: [5, 0]
+                spacing: 10
+
+                Label:
+                    text: ""
+                Label:
+                    text: "Description"
+                    bold: True
+                    font_size: 20
+                Label:
+                    text: "Topic"
+                    bold: True
+                    font_size: 20
+                Label:
+                    text: "Priority"
+                    bold: True
+                    font_size: 20
+                Label:
+                    text: ""
+                Label:
+                    text: ""
+
             ScrollView:
                 GridLayout:
                     id: task_list
                     cols: 1
                     size_hint_y: None
                     height: self.minimum_height
-                    row_default_height: '60dp'
+                    spacing: 5
+
             Button:
                 text: 'Add Task'
                 size_hint_y: None

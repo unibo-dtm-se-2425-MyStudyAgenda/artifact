@@ -14,6 +14,7 @@ Builder.load_file("view/task_screen.kv")
 Builder.load_file("view/planner_screen.kv")
 Builder.load_file("view/notes_screen.kv")
 Builder.load_file("view/pomodoro_screen.kv")
+Builder.load_file("view/task_item.kv")
 
 class MyStudyAgenda(App):
     def build(self):
