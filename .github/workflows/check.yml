@@ -41,4 +41,10 @@ jobs:
 
       - name: Run tests
         shell: bash
-        run: PYTHONPATH=. poetry run pytest --maxfail=1 --disable-warnings -q
+        env:
+          PYTHONPATH: .
+          KIVY_WINDOW: "mock"
+          KIVY_NO_ARGS: "1"
+          KIVY_METRICS_DENSITY: "1"
+        run: poetry run pytest --maxfail=1 --disable-warnings -q
+
