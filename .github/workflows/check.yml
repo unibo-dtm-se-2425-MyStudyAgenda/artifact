@@ -43,8 +43,16 @@ jobs:
         shell: bash
         env:
           PYTHONPATH: .
-          KIVY_WINDOW: "mock"
           KIVY_NO_ARGS: "1"
           KIVY_METRICS_DENSITY: "1"
-        run: poetry run pytest --maxfail=1 --disable-warnings -q
+          KIVY_NO_CONSOLELOG: "1"
+          KIVY_WINDOW: "mock"
+          KIVY_GL_BACKEND: "mock"
+          SDL_VIDEODRIVER: "dummy"
+        run: |
+          echo "Forcing Kivy headless mode"
+          mkdir -p ~/.kivy/config
+          echo "[kivy]\nwindow=mock\nlog_enable=false" > ~/.kivy/config.ini
+          poetry run pytest --maxfail=1 --disable-warnings -q
+
 
