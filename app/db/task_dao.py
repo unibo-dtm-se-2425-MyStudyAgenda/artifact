@@ -3,21 +3,29 @@ from app.model.task import Task
 
 class TaskDAO:
     def __init__(self):
+        # Get a singleton instance of the database connection
         self.db = Database.get_instance()
 
     def insert_task(self, task: Task):
+        # Inserts a new task into the database
         def format_date(value):
+            # Normalize a date value to a string ("YYYY-MM-DD").
+            # Accepts either a datetime.date object or a string.
+            # Returns None if the value is empty.
             if not value:
                 return None
             if isinstance(value, str):
-                return value 
+                return value  # already a string from the UI
             return value.strftime("%Y-%m-%d")  # convert date object to string
 
         def format_time(value):
+            # Normalize a time value to a string ("HH:MM").
+            # Accepts either a datetime.time object or a string.
+            # Returns None if the value is empty.
             if not value:
                 return None
             if isinstance(value, str):
-                return value
+                return value  # already a string from the UI
             return value.strftime("%H:%M")  # convert time object to string
 
         self.db.cursor.execute(
@@ -39,6 +47,7 @@ class TaskDAO:
 
 
     def get_all_tasks(self):
+        # Retrieve all tasks with their associated topic names
         self.db.cursor.execute(
             """SELECT t.id, t.description, t.topic_id, tp.name, t.priority, t.is_completed, t.scheduled_date, t.start_time, t.end_time
             FROM tasks t
@@ -47,6 +56,7 @@ class TaskDAO:
         return self.db.cursor.fetchall()
 
     def set_time_slot(self, task_id: int, scheduled_date: str, start_time: str, end_time: str):
+        # Update the scheduling information (date, start, end times) of an existing task identified by its ID
         self.db.cursor.execute(
             """ UPDATE tasks
                 SET scheduled_date = ?, start_time = ?, end_time = ?
@@ -55,13 +65,16 @@ class TaskDAO:
         self.db.commit()
 
     def delete_task(self, task_id: int):
+        # Deletes a specific task identified by its ID
         self.db.cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
         self.db.commit()
 
     def mark_completed(self, task_id: int):
+        # Updates an existing task's boolean is_completed to true (1)
         self.db.cursor.execute("UPDATE tasks SET is_completed = 1 WHERE id = ?", (task_id,))
         self.db.commit()
     
     def mark_notcompleted(self, task_id: int):
+        # Updates an existing task's boolean is_completed to false (0)
         self.db.cursor.execute("UPDATE tasks SET is_completed = 0 WHERE id = ?", (task_id,))
         self.db.commit()

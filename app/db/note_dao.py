@@ -3,30 +3,37 @@ from app.model.note import Note
 
 class NoteDAO:
     def __init__(self):
+        # Get a singleton instance of the database connection
         self.db = Database.get_instance()
 
     def insert_note(self, note: Note):
+        # Insert a new note into the database
         self.db.cursor.execute(
             """ INSERT INTO notes (title, topic_id, content, created_at)
                 VALUES (?, ?, ?, ?) """,
         (note.title, note.topic.id if note.topic else None, note.content, note.created_at.isoformat()))
         self.db.commit()
+ 
         # Returns the ID of the inserted note
         return self.db.cursor.lastrowid
 
     def get_all_notes(self):
+        # Retrieve all notes ordered by creation date (newest first)
         self.db.cursor.execute("SELECT * FROM notes ORDER BY created_at DESC")
         return self.db.cursor.fetchall()
 
     def get_note_by_id(self, note_id: int):
+        # Retrieve a single note by its ID
         self.db.cursor.execute("SELECT * FROM notes WHERE id = ?", (note_id,))
         return self.db.cursor.fetchone()
 
     def delete_note(self, note_id: int):
+        # Delete a note by its ID
         self.db.cursor.execute("DELETE FROM notes WHERE id = ?", (note_id,))
         self.db.commit()
 
     def update_note(self, note_id, new_content):
+        # Update the content of an existing note by its ID
         self.db.cursor.execute(
             "UPDATE notes SET content = ? WHERE id = ?",
             (new_content, note_id)
