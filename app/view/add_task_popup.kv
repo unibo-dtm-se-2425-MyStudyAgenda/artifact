@@ -1,0 +1,92 @@
+<AddTaskPopup@Popup>: 
+    title: "Add Task"
+    title_color: 0, 0, 0, 1
+    title_align: "center"
+    size_hint: 0.7, 0.7
+    auto_dismiss: True
+    background_color: 1, 1, 1, 1
+    background: ""
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 10
+
+        TextInput:
+            id: desc_input
+            hint_text: "Description"
+            multiline: False
+            foreground_color: 0, 0, 0, 1
+            background_color: 1, 1, 1, 1
+            on_text: root.validate_inputs()
+
+        BoxLayout:
+            spacing: 5
+            Spinner:
+                id: topic_spinner
+                text: "Select topic"
+                values: []
+                background_normal: ""
+                background_color: 0.49, 0.71, 0.84, 1
+            Button:
+                text: "+"
+                size_hint_x: None
+                width: "40dp"
+                on_release: root.add_new_topic()
+                background_normal: ""
+                background_color: 0.49, 0.71, 0.84, 1
+
+        Spinner:
+            id: priority_spinner
+            text: "Select priority"
+            values: ["Low", "Medium", "High"]
+            background_normal: ""
+            background_color: 0.49, 0.71, 0.84, 1
+            on_text: root.validate_inputs()
+
+        Button:
+            id: date_btn
+            text: "Select Date"
+            on_release: root.open_date_picker()
+            background_normal: ""
+            background_color: 0.49, 0.71, 0.84, 1
+
+        Button:
+            id: start_btn
+            text: "Select Start Time"
+            on_release: root.open_time_picker("start")
+            background_normal: ""
+            background_color: 0.49, 0.71, 0.84, 1
+
+        Button:
+            id: end_btn
+            text: "Select End Time"
+            on_release: root.open_time_picker("end")
+            background_normal: ""
+            background_color: 0.49, 0.71, 0.84, 1
+
+        Label:
+            id: error_label
+            text: ""
+            color: 1, 0, 0, 1
+            font_size: 16
+            size_hint_y: None
+            height: "20dp"
+
+        BoxLayout:
+            size_hint_y: None
+            height: '44dp'
+            spacing: 10
+
+            Button:
+                text: "Cancel"
+                on_release: root.dismiss()
+                background_normal: ""
+                background_color: 0.49, 0.71, 0.84, 1
+
+            Button:
+                id: add_btn
+                text: "Add"
+                on_release: root.add_task()
+                background_normal: ""
+                background_color: 0.49, 0.71, 0.84, 1
