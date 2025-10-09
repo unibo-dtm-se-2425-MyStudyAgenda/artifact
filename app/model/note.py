@@ -1,6 +1,16 @@
 from datetime import datetime
 from app.model.topic import Topic
 
+"""
+Represents a user-created note
+Attributes:
+    id (int): Unique identifier for the note
+    title (str): Short title of the note
+    topic (Topic): Associated topic (optional)
+    content (str): Main text content of the note
+    created_at (datetime): Timestamp of when the note was created
+"""
+
 class Note:
     _id_counter = 1
 

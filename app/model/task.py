@@ -1,6 +1,19 @@
 from datetime import date, time
 from app.model.topic import Topic
 
+"""
+Represents a user-created task
+Attributes:
+    id (int): Unique identifier for the task
+    description (str): "Name" of the task
+    topic (Topic): Associated topic (optional)
+    priority (int): Associated priority level (can be 1=low, 2=medium, 3=high)
+    is_completed (boolean): Indicates if the task was ticked as completed
+    scheduled_date (date): The user can choose a date to schedule a task (optional)
+    start_time (time): The user can choose a specific start time to schedule a task (optional)
+    end_time (time): The user can choose a specific end time to schedule a task (optional)
+"""
+
 class Task:
     _id_counter = 1
     
