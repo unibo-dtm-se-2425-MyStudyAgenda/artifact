@@ -9,12 +9,12 @@ from app.controller.topic_controller import TopicController
 from app.controller.task_controller import TaskController
 from app.controller.note_controller import NoteController
 
-Builder.load_file("view/nav_bar.kv")
-Builder.load_file("view/task_screen.kv")
-Builder.load_file("view/planner_screen.kv")
-Builder.load_file("view/notes_screen.kv")
-Builder.load_file("view/pomodoro_screen.kv")
-Builder.load_file("view/task_item.kv")
+Builder.load_file("app/view/nav_bar.kv")
+Builder.load_file("app/view/task_screen.kv")
+Builder.load_file("app/view/planner_screen.kv")
+Builder.load_file("app/view/notes_screen.kv")
+Builder.load_file("app/view/pomodoro_screen.kv")
+Builder.load_file("app/view/task_item.kv")
 
 class MyStudyAgenda(MDApp):
     def build(self):
