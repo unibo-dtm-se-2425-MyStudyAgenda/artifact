@@ -44,11 +44,16 @@ jobs:
         shell: bash
         run: |
           echo "Configuring Kivy headless mode on $RUNNER_OS"
-          mkdir -p ~/.kivy/config
+          mkdir -p ~/.kivy
           echo "[kivy]" > ~/.kivy/config.ini
           echo "window=mock" >> ~/.kivy/config.ini
-          echo "log_enable=false" >> ~/.kivy/config.ini
-          echo "exit_on_error=false" >> ~/.kivy/config.ini
+          echo "log_enable=0" >> ~/.kivy/config.ini
+          echo "exit_on_error=0" >> ~/.kivy/config.ini
+          echo "KIVY_NO_CONSOLELOG = 1" >> ~/.kivy/config.ini
+          echo "KIVY_NO_ARGS = 1" >> ~/.kivy/config.ini
+          echo "KIVY_METRICS_DENSITY = 1" >> ~/.kivy/config.ini
+          echo "Kivy config file created:"
+          cat ~/.kivy/config.ini
 
       - name: Run tests
         shell: bash
