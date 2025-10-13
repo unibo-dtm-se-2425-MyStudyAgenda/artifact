@@ -39,6 +39,17 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-root
 
+      # Setup headless environment for all OS
+      - name: Configure headless mode
+        shell: bash
+        run: |
+          echo "Configuring Kivy headless mode on $RUNNER_OS"
+          mkdir -p ~/.kivy/config
+          echo "[kivy]" > ~/.kivy/config.ini
+          echo "window=mock" >> ~/.kivy/config.ini
+          echo "log_enable=false" >> ~/.kivy/config.ini
+          echo "exit_on_error=false" >> ~/.kivy/config.ini
+
       - name: Run tests
         shell: bash
         env:
@@ -48,11 +59,18 @@ jobs:
           KIVY_NO_CONSOLELOG: "1"
           KIVY_WINDOW: "mock"
           KIVY_GL_BACKEND: "mock"
+          KIVY_GRAPHICS: "mock"
           SDL_VIDEODRIVER: "dummy"
+          DISPLAY: ":99.0"
         run: |
-          echo "Forcing Kivy headless mode"
-          mkdir -p ~/.kivy/config
-          echo "[kivy]\nwindow=mock\nlog_enable=false" > ~/.kivy/config.ini
-          poetry run pytest --maxfail=1 --disable-warnings -q
-
-
+          echo "Running tests in Kivy headless mode"
+          # On Linux, we use xvfb; on others, run directly
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            echo "Using xvfb for virtual display"
+            sudo apt-get update
+            sudo apt-get install -y xvfb
+            xvfb-run -a poetry run pytest --maxfail=1 --disable-warnings -q
+          else
+            echo "Running without display server on $RUNNER_OS"
+            poetry run pytest --maxfail=1 --disable-warnings -q
+          fi
