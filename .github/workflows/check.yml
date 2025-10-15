@@ -50,7 +50,7 @@ jobs:
           echo "KIVY_METRICS_DENSITY=1" >> $GITHUB_ENV
           echo "KIVY_DPI=96" >> $GITHUB_ENV
 
-      - name: Run tests (Linux UI under Xvfb; others skip UI)
+      - name: Run tests (Linux under Xvfb; macOS/Windows headless)
         shell: bash
         run: |
           set -e
@@ -62,7 +62,7 @@ jobs:
             export RUN_UI_TESTS=1
             xvfb-run -a -s "-screen 0 1920x1080x24" poetry run pytest --maxfail=1 --disable-warnings
           else
-            echo "Skipping Kivy UI tests on $RUNNER_OS"
+            echo "Running Kivy UI tests headlessly on $RUNNER_OS (mock window)"
             export RUN_UI_TESTS=0
-            poetry run pytest -k "not ui" --maxfail=1 --disable-warnings
+            poetry run pytest --maxfail=1 --disable-warnings
           fi
