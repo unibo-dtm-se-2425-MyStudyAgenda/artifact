@@ -49,6 +49,7 @@ jobs:
           echo "KIVY_NO_CONSOLELOG=1" >> $GITHUB_ENV
           echo "KIVY_METRICS_DENSITY=1" >> $GITHUB_ENV
           echo "KIVY_DPI=96" >> $GITHUB_ENV
+          echo "CI=true" >> $GITHUB_ENV
 
       - name: Run tests (Linux under Xvfb; macOS/Windows headless)
         shell: bash

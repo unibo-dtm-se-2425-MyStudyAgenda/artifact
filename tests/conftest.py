@@ -12,26 +12,19 @@ os.environ.setdefault("KIVY_NO_CONSOLELOG", "1")
 os.environ.setdefault("KIVY_METRICS_DENSITY", "1")
 os.environ.setdefault("KIVY_DPI", "96")
 
-# Prefer the mock window provider when UI tests are not explicitly requested
-# (Linux job will export RUN_UI_TESTS=1 and run under xvfb to get a real window)
-if os.environ.get("RUN_UI_TESTS") == "1":
-    # Let Kivy use default SDL2 window under Xvfb; do not force dummy driver
-    os.environ.pop("SDL_VIDEODRIVER", None)
-    os.environ.setdefault("KIVY_WINDOW", "sdl2")
-else:
-    # Avoid creating a real OS window on non-Linux runners
-    os.environ.setdefault("KIVY_WINDOW", "mock")
+# Do not force a specific Kivy window provider locally; CI will run headless stubs
 
 # Make sure project root is importable
 repo_root = os.path.dirname(os.path.dirname(__file__))
 if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 
-# Headless-safe stubs for interactive dialogs and popups when not under Xvfb
-if os.environ.get("RUN_UI_TESTS") != "1":
-    # Provide a minimal dummy EventLoop window so Kivy metrics don't try to create SDL2 windows
+# Headless-safe stubs for CI (non-Xvfb jobs)
+if os.environ.get("RUN_UI_TESTS") != "1" and os.environ.get("CI") == "true":
+    # Provide a minimal dummy EventLoop window and assign global Window
     try:
         from kivy.base import EventLoop
+        from kivy.core import window as core_window
 
         class _DummyWindow:
             dpi = 96
@@ -46,9 +39,15 @@ if os.environ.get("RUN_UI_TESTS") != "1":
             def unbind(self, *args, **kwargs):
                 return None
 
+        # Create the dummy window immediately so imports that access Window.size succeed
+        if getattr(EventLoop, "window", None) is None:
+            EventLoop.window = _DummyWindow()
+        core_window.Window = EventLoop.window  # make global Window available
+
         def _ensure_window():
             if getattr(EventLoop, "window", None) is None:
                 EventLoop.window = _DummyWindow()
+                core_window.Window = EventLoop.window
             return EventLoop.window
 
         EventLoop.ensure_window = staticmethod(_ensure_window)  # type: ignore[assignment]
