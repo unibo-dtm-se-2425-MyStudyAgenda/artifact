@@ -14,6 +14,14 @@ os.environ.setdefault("KIVY_DPI", "96")
 
 # Do not force a specific Kivy window provider locally; CI will run headless stubs
 
+# In CI on non-Xvfb jobs, harden headless mode to avoid SDL2/GL providers
+if os.environ.get("CI") == "true" and os.environ.get("RUN_UI_TESTS") != "1":
+    os.environ.setdefault("KIVY_WINDOW", "mock")
+    os.environ.setdefault("KIVY_GL_BACKEND", "mock")
+    # Prefer non-SDL2 image/text providers to avoid native backends
+    os.environ.setdefault("KIVY_IMAGE", "pil,imageio")
+    os.environ.setdefault("KIVY_TEXT", "pil")
+
 # Make sure project root is importable
 repo_root = os.path.dirname(os.path.dirname(__file__))
 if repo_root not in sys.path:
@@ -70,13 +78,7 @@ if os.environ.get("RUN_UI_TESTS") != "1" and os.environ.get("CI") == "true":
         from kivy.uix.popup import Popup
 
         def _popup_open(self, *args, **kwargs):
-            # Trigger on_open hook without creating a real window
-            on_open = getattr(self, "on_open", None)
-            if callable(on_open):
-                try:
-                    on_open()
-                except Exception:
-                    pass
+            # Avoid building any canvas/texture; don't invoke on_open automatically
             return self
 
         def _popup_dismiss(self, *args, **kwargs):
