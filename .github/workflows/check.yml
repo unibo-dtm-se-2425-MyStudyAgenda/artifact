@@ -56,6 +56,8 @@ jobs:
             echo "KIVY_GL_BACKEND=mock" >> $GITHUB_ENV
             echo "KIVY_IMAGE=pil,imageio" >> $GITHUB_ENV
             echo "KIVY_TEXT=pil" >> $GITHUB_ENV
+            # Also force provider order to exclude sdl2 where possible
+            echo "KIVY_WINDOW_PROVIDER=mock" >> $GITHUB_ENV
           fi
 
       - name: Run tests (Linux under Xvfb; macOS/Windows headless)

@@ -21,6 +21,16 @@ if os.environ.get("CI") == "true" and os.environ.get("RUN_UI_TESTS") != "1":
     # Prefer non-SDL2 image/text providers to avoid native backends
     os.environ.setdefault("KIVY_IMAGE", "pil,imageio")
     os.environ.setdefault("KIVY_TEXT", "pil")
+    # Avoid canvas/texture creation during rule application which crashes on macOS/Windows
+    try:
+        from kivy.lang import builder as kivy_builder
+
+        def _noop_build_canvas(self, *args, **kwargs):
+            return None
+
+        kivy_builder.Builder._build_canvas = _noop_build_canvas  # type: ignore[attr-defined]
+    except Exception:
+        pass
 
 # Make sure project root is importable
 repo_root = os.path.dirname(os.path.dirname(__file__))
