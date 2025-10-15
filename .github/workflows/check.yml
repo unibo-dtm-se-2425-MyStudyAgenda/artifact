@@ -50,6 +50,13 @@ jobs:
           echo "KIVY_METRICS_DENSITY=1" >> $GITHUB_ENV
           echo "KIVY_DPI=96" >> $GITHUB_ENV
           echo "CI=true" >> $GITHUB_ENV
+          # Prefer safe providers for headless macOS/Windows
+          if [ "$RUNNER_OS" != "Linux" ]; then
+            echo "KIVY_WINDOW=mock" >> $GITHUB_ENV
+            echo "KIVY_GL_BACKEND=mock" >> $GITHUB_ENV
+            echo "KIVY_IMAGE=pil,imageio" >> $GITHUB_ENV
+            echo "KIVY_TEXT=pil" >> $GITHUB_ENV
+          fi
 
       - name: Run tests (Linux UI under Xvfb; others skip UI)
         shell: bash
