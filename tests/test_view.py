@@ -1,6 +1,8 @@
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-import os ; os.environ["KIVY_NO_ARGS"] = "1"  # prevent Kivy from parsing CLI args
+import os
+import pytest
+os.environ["KIVY_NO_ARGS"] = "1" # Prevent Kivy from parsing CLI args in tests
 import unittest
 from kivy.base import EventLoop
 from kivy.clock import Clock
@@ -53,6 +55,7 @@ class FakeApp(MDApp):
 # ----------------------------
 # Tests for AddTaskPopup
 # ----------------------------
+pytestmark = pytest.mark.ui
 class TestAddTaskPopup(GUITestCase):
     # Tests validation logic and button state for AddTaskPopup
 

@@ -39,43 +39,31 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-root
 
-      # Setup headless environment for all OS
-      - name: Configure headless mode
+       # Configure environment variables used by tests
+      - name: Prepare environment variables
         shell: bash
         run: |
-          echo "Configuring Kivy headless mode on $RUNNER_OS"
-          mkdir -p ~/.kivy
-          echo "[kivy]" > ~/.kivy/config.ini
-          echo "window=mock" >> ~/.kivy/config.ini
-          echo "log_enable=0" >> ~/.kivy/config.ini
-          echo "exit_on_error=0" >> ~/.kivy/config.ini
-          echo "KIVY_NO_CONSOLELOG = 1" >> ~/.kivy/config.ini
-          echo "KIVY_NO_ARGS = 1" >> ~/.kivy/config.ini
-          echo "KIVY_METRICS_DENSITY = 1" >> ~/.kivy/config.ini
-          echo "Kivy config file created:"
-          cat ~/.kivy/config.ini
+          echo "Preparing environment variables on $RUNNER_OS"
+          echo "PYTHONPATH=." >> $GITHUB_ENV
+          echo "KIVY_NO_ARGS=1" >> $GITHUB_ENV
+          echo "KIVY_NO_CONSOLELOG=1" >> $GITHUB_ENV
+          echo "KIVY_METRICS_DENSITY=1" >> $GITHUB_ENV
+          echo "KIVY_DPI=96" >> $GITHUB_ENV
+          echo "CI=true" >> $GITHUB_ENV
 
-      - name: Run tests
+      - name: Run tests (Linux UI under Xvfb; others skip UI)
         shell: bash
-        env:
-          PYTHONPATH: .
-          KIVY_NO_ARGS: "1"
-          KIVY_METRICS_DENSITY: "1"
-          KIVY_NO_CONSOLELOG: "1"
-          KIVY_WINDOW: "mock"
-          KIVY_GL_BACKEND: "mock"
-          KIVY_GRAPHICS: "mock"
-          SDL_VIDEODRIVER: "dummy"
-          DISPLAY: ":99.0"
         run: |
-          echo "Running tests in Kivy headless mode"
-          # On Linux, we use xvfb; on others, run directly
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            echo "Using xvfb for virtual display"
+          set -e
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            echo "Installing Xvfb and running full test suite (including UI)"
             sudo apt-get update
             sudo apt-get install -y xvfb
-            xvfb-run -a poetry run pytest --maxfail=1 --disable-warnings -q
+            # export flag to enable UI tests
+            export RUN_UI_TESTS=1
+            xvfb-run -a -s "-screen 0 1920x1080x24" poetry run pytest --maxfail=1 --disable-warnings
           else
-            echo "Running without display server on $RUNNER_OS"
-            poetry run pytest --maxfail=1 --disable-warnings -q
+            echo "Running Kivy UI tests headlessly on $RUNNER_OS (mock window)"
+            export RUN_UI_TESTS=0
+            poetry run pytest --maxfail=1 --disable-warnings
           fi
