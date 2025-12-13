@@ -1,4 +1,5 @@
 name: CI
+
 on:
   push:
     paths-ignore:
@@ -35,12 +36,34 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+
       - name: Install poetry
         run: pip install poetry
 
       - name: Install dependencies
         run: poetry install --no-root
 
+      - name: Set environment variables
+        run: |
+          echo "PYTHONPATH=." >> $GITHUB_ENV
+          echo "KIVY_NO_ARGS=1" >> $GITHUB_ENV
+          echo "KIVY_NO_CONSOLELOG=1" >> $GITHUB_ENV
+          echo "KIVY_LOG_LEVEL=error" >> $GITHUB_ENV
+          echo "CI=true" >> $GITHUB_ENV
+
       - name: Run tests
         shell: bash
-        run: PYTHONPATH=. poetry run pytest --maxfail=1 --disable-warnings -q
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            # Run all tests including GUI
+            pytest --maxfail=1 --disable-warnings -q
+          else
+            # Run only non-GUI tests on Linux/macOS
+            pytest -m "not ui" --maxfail=1 --disable-warnings -q
