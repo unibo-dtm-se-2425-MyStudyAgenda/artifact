@@ -58,12 +58,10 @@ jobs:
           echo "KIVY_LOG_LEVEL=error" >> $GITHUB_ENV
           echo "CI=true" >> $GITHUB_ENV
 
-      - name: Run tests
-        shell: bash
-        run: |
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            # Run all tests including GUI
-            pytest --maxfail=1 --disable-warnings -q
-          else
-            # Run only non-GUI tests on Linux/macOS
-            pytest -m "not ui" --maxfail=1 --disable-warnings -q
+      - name: Run unit tests (all OSes)
+        run: pytest -m "not ui" --maxfail=1 --disable-warnings -q
+
+      - name: Run GUI tests (Windows only)
+        if: runner.os == 'Windows'
+        run: pytest --maxfail=1 --disable-warnings -q
+
