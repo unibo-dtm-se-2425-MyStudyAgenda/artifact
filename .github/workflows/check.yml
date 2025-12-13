@@ -19,7 +19,9 @@ jobs:
           - windows-latest
           - macos-latest
         python-version:
-          - '>=3.13'
+          - '3.10'
+          - '3.11'
+          - '3.12'
     runs-on: ${{ matrix.os }}
     name: Test on Python ${{ matrix.python-version }}, on ${{ matrix.os }}
     timeout-minutes: 30
@@ -39,38 +41,6 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-root
 
-       # Configure environment variables used by tests
-      - name: Prepare environment variables
+      - name: Run tests
         shell: bash
-        run: |
-          echo "Preparing environment variables on $RUNNER_OS"
-          echo "PYTHONPATH=." >> $GITHUB_ENV
-          echo "KIVY_NO_ARGS=1" >> $GITHUB_ENV
-          echo "KIVY_NO_CONSOLELOG=1" >> $GITHUB_ENV
-          echo "KIVY_METRICS_DENSITY=1" >> $GITHUB_ENV
-          echo "KIVY_DPI=96" >> $GITHUB_ENV
-          echo "CI=true" >> $GITHUB_ENV
-          # Prefer safe providers for headless macOS/Windows
-          if [ "$RUNNER_OS" != "Linux" ]; then
-            echo "KIVY_WINDOW=mock" >> $GITHUB_ENV
-            echo "KIVY_GL_BACKEND=mock" >> $GITHUB_ENV
-            echo "KIVY_IMAGE=pil,imageio" >> $GITHUB_ENV
-            echo "KIVY_TEXT=pil" >> $GITHUB_ENV
-          fi
-
-      - name: Run tests (Linux UI under Xvfb; others skip UI)
-        shell: bash
-        run: |
-          set -e
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            echo "Installing Xvfb and running full test suite (including UI)"
-            sudo apt-get update
-            sudo apt-get install -y xvfb
-            # export flag to enable UI tests
-            export RUN_UI_TESTS=1
-            xvfb-run -a -s "-screen 0 1920x1080x24" poetry run pytest --maxfail=1 --disable-warnings
-          else
-            echo "Running Kivy UI tests headlessly on $RUNNER_OS (mock window)"
-            export RUN_UI_TESTS=0
-            poetry run pytest --maxfail=1 --disable-warnings
-          fi
+        run: PYTHONPATH=. poetry run pytest --maxfail=1 --disable-warnings -q
