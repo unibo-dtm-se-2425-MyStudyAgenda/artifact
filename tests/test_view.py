@@ -1,6 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 import os
+import sys
 import pytest
 os.environ["KIVY_NO_ARGS"] = "1" # Prevent Kivy from parsing CLI args in tests
 import unittest
@@ -17,6 +18,10 @@ from app.view.task_item import TaskItem
 from app.view.add_topic_popup import AddTopicPopup
 from app.model.task import Task
 from app.model.topic import Topic
+
+# Condition to avoid GUI tests on non-Windows runners
+if sys.platform != "win32":
+    pytest.skip("GUI tests run only on Windows CI", allow_module_level=True)
 
 # ----------------------------
 # Base class for GUI test cases
