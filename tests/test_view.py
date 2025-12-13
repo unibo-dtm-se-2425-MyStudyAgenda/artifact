@@ -27,18 +27,17 @@ if sys.platform != "win32":
 # Base class for GUI test cases
 # ----------------------------
 class GUITestCase(unittest.TestCase):
-    # Base class to run the app in test mode and provide utility methods
 
-    def setUp(self):
-        # Initialize and prepare the Kivy app before each test
+    @classmethod
+    def setUpClass(cls):
         if not EventLoop.event_listeners:
             EventLoop.ensure_window()
-        self.app = MyStudyAgenda()
-        self.app._run_prepare()
+        cls.app = MyStudyAgenda()
+        cls.app._run_prepare()
 
-    def tearDown(self):
-        # Stop the Kivy app after each test to clean resources
-        self.app.stop()
+    @classmethod
+    def tearDownClass(cls):
+        cls.app.stop()
 
     def run_clock(self):
         # Force Kivy's clock to process scheduled events (simulate UI loop)
