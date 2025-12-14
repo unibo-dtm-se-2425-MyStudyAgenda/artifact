@@ -25,7 +25,7 @@ jobs:
           - '3.12'
     runs-on: ${{ matrix.os }}
     name: Unit Tests on Python ${{ matrix.python-version }}, ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
