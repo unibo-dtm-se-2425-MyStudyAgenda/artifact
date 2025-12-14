@@ -24,17 +24,18 @@ from app.view.planner_screen import PlannerScreen
 # Base class for GUI test cases
 # ----------------------------
 class GUITestCase(unittest.TestCase):
+    # Base class to run the app in test mode and provide utility methods
 
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
+        # Initialize and prepare the Kivy app before each test
         if not EventLoop.event_listeners:
             EventLoop.ensure_window()
-        cls.app = MyStudyAgenda()
-        cls.app._run_prepare()
+        self.app = MyStudyAgenda()
+        self.app._run_prepare()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.app.stop()
+    def tearDown(self):
+        # Stop the Kivy app after each test to clean resources
+        self.app.stop()
 
     def run_clock(self):
         # Force Kivy's clock to process scheduled events (simulate UI loop)
@@ -121,7 +122,7 @@ class TestTaskItem(GUITestCase):
 # Tests for AddTopicPopup
 # ----------------------------
 @pytest.mark.ui
-class AddTopicPopupTestCase(unittest.TestCase):
+class TestAddTopicPopup(GUITestCase):
     # Tests topic creation and parent popup refresh in AddTopicPopup
 
     def setUp(self):
@@ -163,7 +164,7 @@ class AddTopicPopupTestCase(unittest.TestCase):
 # Tests for PlannerScreen
 # ----------------------------
 @pytest.mark.ui
-class PlannerGUITestCase(unittest.TestCase):
+class TestPlannerScreen(GUITestCase):
     # Tests week navigation, layout updates, and parsing in PlannerScreen
 
     def setUp(self):
