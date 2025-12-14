@@ -8,6 +8,7 @@ from kivy.base import EventLoop
 from kivy.clock import Clock
 from kivymd.app import MDApp
 from kivy.app import App
+from kivy.uix.gridlayout import GridLayout
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 from app.main import MyStudyAgenda
@@ -17,6 +18,7 @@ from app.view.task_item import TaskItem
 from app.view.add_topic_popup import AddTopicPopup
 from app.model.task import Task
 from app.model.topic import Topic
+from app.view.planner_screen import PlannerScreen
 
 # ----------------------------
 # Base class for GUI test cases
@@ -156,3 +158,55 @@ class AddTopicPopupTestCase(unittest.TestCase):
         self.popup.parent_popup = parent
         self.popup.save_topic()
         parent.on_open.assert_called_once()
+
+# ----------------------------
+# Tests for PlannerScreen
+# ----------------------------
+@pytest.mark.ui
+class PlannerGUITestCase(unittest.TestCase):
+    # Tests week navigation, layout updates, and parsing in PlannerScreen
+
+    def setUp(self):
+        # Initialize screen with fake app and mock controllers
+        if not EventLoop.event_listeners:
+            EventLoop.ensure_window()
+        self.app = FakeApp()
+        self.app.run = lambda *args: None
+        self.app._run_prepare()
+        self.app.task_controller = type("obj", (), {
+            "get_all_tasks": lambda self: []
+        })()
+        App.get_running_app = lambda: self.app
+
+        self.screen = PlannerScreen()
+        self.screen.ids = {
+            "planner_grid": GridLayout(cols=8, size=(800, 600)),
+            "month_label": type("obj", (), {"text": ""})()
+        }
+
+    def test_update_week_view_creates_headers(self):
+        # Updating week view should refresh month label
+        self.screen.update_week_view()
+        self.assertNotEqual(self.screen.ids["month_label"].text, "")
+
+    def test_next_and_previous_week(self):
+        # Navigating forward and backward should update current_monday accordingly
+        current = self.screen.current_monday
+        self.screen.next_week()
+        self.assertNotEqual(self.screen.current_monday, current)
+        self.screen.previous_week()
+        self.assertEqual(self.screen.current_monday, current)
+
+    def test_parse_date_and_time(self):
+        # Parse date and time strings correctly
+        d = self.screen.parse_date("2025-01-01")
+        t = self.screen.parse_time("12:00")
+        self.assertEqual(d.year, 2025)
+        self.assertEqual(t.hour, 12)
+
+    def test_time_to_y(self):
+        # Convert times to Y coordinate, later times should map higher
+        from datetime import time
+        y1 = self.screen._time_to_y(time(0, 0))
+        y2 = self.screen._time_to_y(time(12, 0))
+        self.assertTrue(y2 > y1)
