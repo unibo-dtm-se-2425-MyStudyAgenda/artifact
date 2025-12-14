@@ -19,6 +19,7 @@ from app.view.add_topic_popup import AddTopicPopup
 from app.model.task import Task
 from app.model.topic import Topic
 from app.view.planner_screen import PlannerScreen
+from app.view.schedule_popup import SchedulePopup
 
 # ----------------------------
 # Base class for GUI test cases
@@ -159,6 +160,66 @@ class TestAddTopicPopup(GUITestCase):
         self.popup.parent_popup = parent
         self.popup.save_topic()
         parent.on_open.assert_called_once()
+
+# ----------------------------
+# Tests for SchedulePopup
+# ----------------------------
+@pytest.mark.ui
+class TestSchedulePopup(GUITestCase):
+    # Tests date and time selection inside SchedulePopup
+
+    def setUp(self):
+        if not EventLoop.event_listeners:
+            EventLoop.ensure_window()
+        self.app = FakeApp()
+        self.app.run = lambda *args: None
+        self.app._run_prepare()
+        self.app.task_controller = MagicMock()
+        self.app.topic_controller = MagicMock()
+        self.app.sm = MagicMock()
+        task_screen_mock = MagicMock()
+        task_screen_mock.refresh_task_list = MagicMock()
+        self.app.sm.get_screen.return_value = task_screen_mock
+
+        App.get_running_app = lambda: self.app
+
+        # Create a TaskItem and open SchedulePopup before each test
+        task = Task(description="Test", priority=1)
+        task.selected_date = "2025-01-01"
+        task.start_time = "12:00"
+        task.end_time = "13:00"
+
+        self.item = TaskItem(task)
+        self.popup = SchedulePopup(self.item)
+        self.popup.open()
+        self.run_clock()
+        self.popup.ids = {"error_label": SimpleNamespace(text=""), "save_btn": SimpleNamespace(disabled=False)}
+
+    def tearDown(self):
+        # Dismiss the popup and stop the app after each test
+        self.popup.dismiss()
+
+    def test_set_date(self):
+            # Ensure that selecting a date updates the button text
+            from datetime import date
+            d = date(2025, 1, 1)
+            fake_btn = type("B", (), {"text": ""})()
+            self.popup.set_date(d, fake_btn)
+            self.assertIn("2025-01-01", fake_btn.text)
+
+    def test_invalid_time_order(self):
+        # If end time is before start time, an error is shown and save button disabled
+        from datetime import time
+        # Creates mock buttons that SchedulePopup tries to update
+        fake_start_btn = type("B", (), {"text": ""})()
+        fake_end_btn = type("B", (), {"text": ""})() 
+        
+        # Simulates the setting of start and end time
+        self.popup.set_time("start", time(12, 0), fake_start_btn)
+        self.popup.set_time("end", time(11, 0), fake_end_btn)
+        
+        self.assertEqual(self.popup.ids.error_label.text, "End time must be later than start time")
+        self.assertTrue(self.popup.ids.save_btn.disabled)
 
 # ----------------------------
 # Tests for PlannerScreen
