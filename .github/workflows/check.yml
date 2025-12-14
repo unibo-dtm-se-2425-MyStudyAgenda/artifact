@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  unit-tests:
     strategy:
       fail-fast: false
       matrix:
@@ -24,7 +24,54 @@ jobs:
           - '3.11'
           - '3.12'
     runs-on: ${{ matrix.os }}
-    name: Test on Python ${{ matrix.python-version }}, on ${{ matrix.os }}
+    name: Unit Tests on Python ${{ matrix.python-version }}, ${{ matrix.os }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-root
+      
+      - name: Set environment variables
+        run: |
+          echo "PYTHONPATH=." >> $GITHUB_ENV
+          echo "KIVY_NO_ARGS=1" >> $GITHUB_ENV
+          echo "CI=true" >> $GITHUB_ENV
+
+      - name: Run Unit Tests (Logic Only)
+        run: poetry run pytest -m "not ui" --maxfail=1 --disable-warnings -q
+
+  gui-tests:
+    needs: unit-tests # gui tests only execute if unit-tests pass successfully
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - '3.10'
+          - '3.11'
+          - '3.12'
+    runs-on: ubuntu-latest # most stable environment for Xvfb
+    name: GUI Tests (Xvfb) on Python ${{ matrix.python-version }}
     timeout-minutes: 30
 
     steps:
@@ -43,6 +90,8 @@ jobs:
             ~/.cache/pypoetry
             ~/.cache/pip
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
 
       - name: Install poetry
         run: pip install poetry
@@ -58,10 +107,10 @@ jobs:
           echo "KIVY_LOG_LEVEL=error" >> $GITHUB_ENV
           echo "CI=true" >> $GITHUB_ENV
 
-      - name: Run unit tests (all OSes)
-        run: pytest -m "not ui" --maxfail=1 --disable-warnings -q
+      - name: Install Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
 
-      - name: Run GUI tests (Windows only)
-        if: runner.os == 'Windows'
-        run: pytest --maxfail=1 --disable-warnings -q
-
+      - name: Run GUI Tests with Xvfb
+        run: xvfb-run -a poetry run pytest -m "ui" --maxfail=1 --disable-warnings -q
