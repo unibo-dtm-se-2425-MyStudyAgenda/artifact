@@ -1,0 +1,52 @@
+<SchedulePopup>:
+    title: "Schedule Task"
+    title_color: 0, 0, 0, 1
+    title_align: "center"
+    size_hint: 0.7, 0.5
+    auto_dismiss: True
+    background_color: 1, 1, 1, 1
+    background: ""
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "10dp"
+
+        Button:
+            id: date_btn
+            text: "Date: " + (root.task_item.selected_date if root.task_item and root.task_item.selected_date else "Select")
+            color: 0.13, 0.59, 0.95, 1
+            background_color: 1, 1, 1, 1
+            background_normal: ""
+            on_release: root.open_date_picker(self)
+
+        Button:
+            id: start_btn
+            text: "Start: " + (root.task_item.start_time if root.task_item and root.task_item.start_time else "Select")
+            color: 0.13, 0.59, 0.95, 1
+            background_color: 1, 1, 1, 1
+            background_normal: ""
+            on_release: root.open_time_picker("start", self)
+
+        Button:
+            id: end_btn
+            text: "End: " + (root.task_item.end_time if root.task_item and root.task_item.end_time else "Select")
+            color: 0.13, 0.59, 0.95, 1
+            background_color: 1, 1, 1, 1
+            background_normal: ""
+            on_release: root.open_time_picker("end", self)
+        
+        Label:
+            id: error_label
+            text: ""
+            color: 1, 0, 0, 1
+            font_size: 16
+            size_hint_y: None
+            height: "20dp"
+
+        Button:
+            id: save_btn
+            text: "Save"
+            background_color: 0.13, 0.59, 0.95, 1
+            background_normal: ""
+            on_release: root.save_schedule()

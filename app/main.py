@@ -18,6 +18,7 @@ Builder.load_file("app/view/task_item.kv")
 Builder.load_file("app/view/add_task_popup.kv")
 Builder.load_file("app/view/add_topic_popup.kv")
 Builder.load_file("app/view/spinner_option.kv")
+Builder.load_file("app/view/schedule_popup.kv")
 
 class MyStudyAgenda(MDApp):
     def build(self):
