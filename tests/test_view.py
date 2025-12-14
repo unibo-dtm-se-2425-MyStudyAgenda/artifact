@@ -1,12 +1,8 @@
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 import os
-import sys
 import pytest
 os.environ["KIVY_NO_ARGS"] = "1" # Prevent Kivy from parsing CLI args in tests
-# Condition to avoid GUI tests on non-Windows runners
-if sys.platform != "win32":
-    pytest.skip("GUI tests run only on Windows CI", allow_module_level=True)
 import unittest
 from kivy.base import EventLoop
 from kivy.clock import Clock
@@ -58,7 +54,7 @@ class FakeApp(MDApp):
 # ----------------------------
 # Tests for AddTaskPopup
 # ----------------------------
-pytestmark = pytest.mark.ui
+@pytest.mark.ui
 class TestAddTaskPopup(GUITestCase):
     # Tests validation logic and button state for AddTaskPopup
 
@@ -102,6 +98,7 @@ class TestAddTaskPopup(GUITestCase):
 # ----------------------------
 # Tests for TaskItem
 # ----------------------------
+@pytest.mark.ui
 class TestTaskItem(GUITestCase):
     # Tests task item initialization and checkbox interaction
 
@@ -121,6 +118,7 @@ class TestTaskItem(GUITestCase):
 # ----------------------------
 # Tests for AddTopicPopup
 # ----------------------------
+@pytest.mark.ui
 class AddTopicPopupTestCase(unittest.TestCase):
     # Tests topic creation and parent popup refresh in AddTopicPopup
 
