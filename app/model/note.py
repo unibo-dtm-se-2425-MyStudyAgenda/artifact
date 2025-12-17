@@ -27,4 +27,4 @@ class Note:
         self.created_at = created_at if created_at is not None else datetime.now()
 
     def __repr__(self):
-        return f"Note(id={self.id}, title='{self.title}', created_at='{self.created_at}')"
+        return f"Note(id={self.id}, title='{self.title}', topic='{self.topic}', created_at='{self.created_at}')"
