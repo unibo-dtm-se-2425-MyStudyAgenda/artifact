@@ -6,7 +6,7 @@ class TopicController:
         # Initialize DAO for database interaction
         self.dao = TopicDAO()
 
-    def create_topic(self, topic_name: Topic):
+    def create_topic(self, topic_name: str):
         # Insert a new topic into the database
         topic = Topic(name=topic_name)
         self.dao.insert_topic(topic)
