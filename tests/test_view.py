@@ -9,17 +9,23 @@ from kivy.clock import Clock
 from kivymd.app import MDApp
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 from app.main import MyStudyAgenda
+from app.model.task import Task
+from app.model.topic import Topic
+from app.model.note import Note
 from app.view.add_task_popup import AddTaskPopup
 from app.view.add_topic_popup import AddTopicPopup
 from app.view.task_item import TaskItem
-from app.view.add_topic_popup import AddTopicPopup
-from app.model.task import Task
-from app.model.topic import Topic
 from app.view.planner_screen import PlannerScreen
 from app.view.schedule_popup import SchedulePopup
+from app.view.add_note_popup import AddNotePopup
+from app.view.notes_screen import NotesScreen
+from app.view.note_item import NoteItem
+from app.view.notebook_screen import NotebookScreen
+from datetime import datetime
 
 # ----------------------------
 # Base class for GUI test cases
@@ -272,3 +278,171 @@ class TestPlannerScreen(GUITestCase):
         y1 = self.screen._time_to_y(time(0, 0))
         y2 = self.screen._time_to_y(time(12, 0))
         self.assertTrue(y2 > y1)
+
+# ----------------------------
+# Tests for NotesScreen
+# ----------------------------
+class TestNotesScreen(GUITestCase):
+    # Tests notes list loading and notebook screen navigation
+
+    def setUp(self):
+        # Prepare fake app and mock controllers for NotesScreen
+        if not EventLoop.event_listeners:
+            EventLoop.ensure_window()
+
+        self.app = FakeApp()
+        self.app.run = lambda *a, **kw: None
+        self.app._run_prepare()
+        self.app.note_controller = SimpleNamespace(
+            get_all_notes=lambda: [Note(id=1, title="Note A", topic=None, content="", created_at=datetime.now())]
+        )
+        self.app.sm = SimpleNamespace(get_screen=lambda name: self.notes_screen)
+        App.get_running_app = lambda: self.app
+
+        # Create NotesScreen with mocked ids
+        self.notes_screen = NotesScreen()
+        self.notes_screen.ids = {"notes_list": BoxLayout()}
+
+    def test_load_notes_adds_widgets(self):
+        # After loading notes, the notes_list should contain at least one widget
+        self.notes_screen.load_notes()
+        self.assertGreater(len(self.notes_screen.ids["notes_list"].children), 0)
+
+    def test_open_notebook_switches_screen(self):
+        # Opening a note should switch screen to notebook and call open_note on it
+        class FakeManager:
+            def __init__(self):
+                self.current = "notes"
+            def get_screen(self, name):
+                return SimpleNamespace(open_note=lambda note_id: setattr(self, "opened", note_id))
+
+        note = Note(id=42, title="Note B", topic=None, content="", created_at=datetime.now())
+        self.notes_screen.manager = FakeManager()
+        self.notes_screen.open_notebook(note)
+        self.assertEqual(self.notes_screen.manager.current, "notebook")
+        self.assertEqual(getattr(self.notes_screen.manager, "opened"), 42)
+
+
+# ----------------------------
+# Tests for AddNotePopup
+# ----------------------------
+class TestAddNotePopup(GUITestCase):
+    # Tests topic population, validation, and note creation
+
+    def setUp(self):
+        # Prepare fake app with topic and note controllers
+        if not EventLoop.event_listeners:
+            EventLoop.ensure_window()
+
+        simulated_topic = Topic(id=1, name="Math")
+        self.app = FakeApp()
+        self.app.run = lambda *a, **kw: None
+        self.app._run_prepare()
+        self.app.topic_controller = SimpleNamespace(
+            get_all_topics=lambda: [simulated_topic],
+            get_topic_id=lambda name: 1 if name == "Math" else None,
+            get_topic_by_id=lambda topic_id: simulated_topic if topic_id == 1 else None
+        )
+        self.app.note_controller = SimpleNamespace(create_note=lambda note: 123)
+        self.app.root = SimpleNamespace(
+            get_screen=lambda name: SimpleNamespace(open_note=lambda note_id: setattr(self, "opened", note_id)),
+            current="notes"
+        )
+        App.get_running_app = lambda: self.app
+
+        # Create popup with mocked ids
+        self.popup = AddNotePopup()
+        self.popup.ids = {
+            "topic_spinner": SimpleNamespace(values=[], text="Math"),
+            "title_input": SimpleNamespace(text="My Note"),
+            "error_label": SimpleNamespace(text="")
+        }
+        self.popup.dismiss = lambda: setattr(self, "dismissed", True)
+
+    def test_create_note_with_empty_title_shows_error(self):
+        # Empty title should display an error and prevent note creation
+        self.popup.ids["title_input"].text = ""
+        self.popup.create_note()
+        self.assertEqual(self.popup.ids["error_label"].text, "Title cannot be empty")
+
+    def test_create_note_valid_calls_controller(self):
+        # Valid note creation should dismiss popup and switch to notebook
+        self.popup.create_note()
+        self.assertTrue(hasattr(self, "dismissed"))
+        self.assertEqual(self.app.root.current, "notebook")
+
+
+# ----------------------------
+# Tests for NotebookScreen
+# ----------------------------
+class TestNotebookScreen(GUITestCase):
+    # Tests loading, saving, and navigation for NotebookScreen
+
+    def setUp(self):
+        # Prepare fake app with mocked note controller
+        if not EventLoop.event_listeners:
+            EventLoop.ensure_window()
+
+        self.app = FakeApp()
+        self.app.run = lambda *a, **kw: None
+        self.app._run_prepare()
+        self.app.note_controller = SimpleNamespace(
+            get_note_by_id=lambda note_id: Note(id=note_id, title="Note C", topic=None, content="Hello", created_at=datetime.now()),
+            update_note=lambda note_id, content: setattr(self, "updated", (note_id, content))
+        )
+        App.get_running_app = lambda: self.app
+
+        self.screen = NotebookScreen()
+        self.screen.ids = {"content_input": SimpleNamespace(text="")}
+
+    def test_open_note_loads_content(self):
+        # Opening a note should load its content into the text input
+        self.screen.open_note(5)
+        self.assertEqual(self.screen.ids["content_input"].text, "Hello")
+
+    def test_save_note_updates_controller(self):
+        # Saving should update the note content via controller
+        self.screen.current_note_id = 5
+        self.screen.ids["content_input"].text = "Updated"
+        self.screen.save_note()
+        self.assertEqual(getattr(self, "updated")[1], "Updated")
+
+
+# ----------------------------
+# Tests for NoteItem
+# ----------------------------
+class TestNoteItem(GUITestCase):
+    # Tests initialization and user actions for NoteItem
+
+    def setUp(self):
+        # Prepare fake app with mocked controllers and screen manager
+        if not EventLoop.event_listeners:
+            EventLoop.ensure_window()
+
+        self.app = FakeApp()
+        self.app.run = lambda *a, **kw: None
+        self.app._run_prepare()
+        self.app.topic_controller = SimpleNamespace(get_topic_name=lambda topic_id: "Math")
+        self.app.note_controller = SimpleNamespace(delete_note=lambda note_id: setattr(self, "deleted", note_id))
+        self.app.sm = SimpleNamespace(
+            get_screen=lambda name: SimpleNamespace(
+                open_notebook=lambda note: setattr(self, "opened", note),
+                refresh_note_list=lambda: setattr(self, "refreshed", True)
+            )
+        )
+        App.get_running_app = lambda: self.app
+
+        self.note = Note(id=10, title="Title", topic=Topic(id=1, name="Math"), content="", created_at=datetime.now())
+        self.item = NoteItem(self.note)
+
+    def test_open_note_calls_screen(self):
+        # Clicking on a note item should call open_note on NotesScreen
+        self.item.open_note()
+        self.assertEqual(getattr(self, "opened").id, 10)
+
+    def test_delete_note_calls_controller_and_refresh(self):
+        # Deleting a note should call controller and refresh note list
+        self.item.delete_note()
+        Clock.tick()  # process scheduled callbacks
+        self.assertEqual(getattr(self, "deleted"), 10)
+        self.assertTrue(getattr(self, "refreshed"))
