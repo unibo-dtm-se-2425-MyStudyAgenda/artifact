@@ -1,0 +1,33 @@
+<NotebookScreen>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 10
+
+        TextInput:
+            id: content_input
+            multiline: True
+            foreground_color: 0, 0, 0, 1
+            background_color: 1, 1, 1, 1
+
+        BoxLayout:
+            size_hint_y: None
+            height: "40dp"
+            spacing: 10
+            Button:
+                text: "Save"
+                background_normal: ""
+                background_color: 0.49, 0.71, 0.84, 1
+                on_release: root.save_note()
+            Button:
+                text: "Back"
+                background_normal: ""
+                background_color: 0.49, 0.71, 0.84, 1
+                on_release: root.go_back()
