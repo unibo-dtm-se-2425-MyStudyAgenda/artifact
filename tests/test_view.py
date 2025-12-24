@@ -16,17 +16,17 @@ from app.main import MyStudyAgenda
 from app.model.task import Task
 from app.model.topic import Topic
 from app.model.note import Note
+from app.view.planner_screen import PlannerScreen
+from app.view.notes_screen import NotesScreen
+from app.view.notebook_screen import NotebookScreen
+from app.view.pomodoro_screen import PomodoroScreen
+from app.view.note_item import NoteItem
+from app.view.task_item import TaskItem
 from app.view.add_task_popup import AddTaskPopup
 from app.view.add_topic_popup import AddTopicPopup
-from app.view.task_item import TaskItem
-from app.view.planner_screen import PlannerScreen
 from app.view.schedule_popup import SchedulePopup
 from app.view.add_note_popup import AddNotePopup
-from app.view.notes_screen import NotesScreen
-from app.view.note_item import NoteItem
-from app.view.notebook_screen import NotebookScreen
 from datetime import datetime
-from app.view.pomodoro_screen import PomodoroScreen
 
 # ----------------------------
 # Base class for GUI test cases
@@ -57,10 +57,52 @@ class GUITestCase(unittest.TestCase):
 # FakeApp for mocking controllers
 # ----------------------------
 class FakeApp(MDApp):
-    # Minimal fake KivyMD app to satisfy screen dependencies
+    # Minimal fake KivyMD app to satisfy screen dependencies and mock controllers
     def build(self):
         return None
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Mocking all controllers required by any component
+        
+        # Task Controller Mock
+        self.task_controller = SimpleNamespace(
+            get_all_tasks=lambda: [
+                Task(
+                    id=1,
+                    description="Test task",
+                    topic=None,
+                    priority=1,
+                    is_completed=False,
+                    scheduled_date=None,
+                    start_time=None,
+                    end_time=None
+                )
+            ],
+            create_task=lambda task: 123,
+            update_task=MagicMock(), # Aggiunto per coerenza
+        )
+
+        # Topic Controller Mock
+        self.topic_controller = SimpleNamespace(
+            get_topic_id=lambda name: 7,
+            get_all_topics=lambda: [Topic(id=7, name="Topic Mocked")],
+            get_topic_by_id=lambda topic_id: Topic(id=topic_id, name="Topic Mocked"),
+            create_topic=MagicMock(),
+            get_topic_name=lambda topic_id: "Topic Mocked"
+        )
+        
+        # Note Controller Mock
+        self.note_controller = SimpleNamespace(
+            get_all_notes=lambda: [Note(id=1, title="Note A", topic=None, content="", created_at=datetime.now())],
+            get_note_by_id=lambda note_id: Note(id=note_id, title="Note C", topic=None, content="Hello", created_at=datetime.now()),
+            delete_note=lambda note_id: setattr(self, "deleted", note_id),
+            create_note=MagicMock(),
+            update_note=lambda note_id, content: setattr(self, "updated", (note_id, content))
+        )
+
+        # Screen Manager Mock
+        self.sm = SimpleNamespace(get_screen=MagicMock())
 
 # ----------------------------
 # Tests for AddTaskPopup
@@ -140,7 +182,6 @@ class TestAddTopicPopup(GUITestCase):
         self.app = FakeApp()
         self.app.run = lambda *args: None
         self.app._run_prepare()
-        self.app.topic_controller = MagicMock()
         App.get_running_app = lambda: self.app
 
         # Create AddTopicPopup with mocked ids
@@ -181,12 +222,6 @@ class TestSchedulePopup(GUITestCase):
         self.app = FakeApp()
         self.app.run = lambda *args: None
         self.app._run_prepare()
-        self.app.task_controller = MagicMock()
-        self.app.topic_controller = MagicMock()
-        self.app.sm = MagicMock()
-        task_screen_mock = MagicMock()
-        task_screen_mock.refresh_task_list = MagicMock()
-        self.app.sm.get_screen.return_value = task_screen_mock
 
         App.get_running_app = lambda: self.app
 
@@ -242,9 +277,6 @@ class TestPlannerScreen(GUITestCase):
         self.app = FakeApp()
         self.app.run = lambda *args: None
         self.app._run_prepare()
-        self.app.task_controller = type("obj", (), {
-            "get_all_tasks": lambda self: []
-        })()
         App.get_running_app = lambda: self.app
 
         self.screen = PlannerScreen()
@@ -294,10 +326,6 @@ class TestNotesScreen(GUITestCase):
         self.app = FakeApp()
         self.app.run = lambda *a, **kw: None
         self.app._run_prepare()
-        self.app.note_controller = SimpleNamespace(
-            get_all_notes=lambda: [Note(id=1, title="Note A", topic=None, content="", created_at=datetime.now())]
-        )
-        self.app.sm = SimpleNamespace(get_screen=lambda name: self.notes_screen)
         App.get_running_app = lambda: self.app
 
         # Create NotesScreen with mocked ids
@@ -339,12 +367,6 @@ class TestAddNotePopup(GUITestCase):
         self.app = FakeApp()
         self.app.run = lambda *a, **kw: None
         self.app._run_prepare()
-        self.app.topic_controller = SimpleNamespace(
-            get_all_topics=lambda: [simulated_topic],
-            get_topic_id=lambda name: 1 if name == "Math" else None,
-            get_topic_by_id=lambda topic_id: simulated_topic if topic_id == 1 else None
-        )
-        self.app.note_controller = SimpleNamespace(create_note=lambda note: 123)
         self.app.root = SimpleNamespace(
             get_screen=lambda name: SimpleNamespace(open_note=lambda note_id: setattr(self, "opened", note_id)),
             current="notes"
@@ -372,7 +394,6 @@ class TestAddNotePopup(GUITestCase):
         self.assertTrue(hasattr(self, "dismissed"))
         self.assertEqual(self.app.root.current, "notebook")
 
-
 # ----------------------------
 # Tests for NotebookScreen
 # ----------------------------
@@ -387,10 +408,6 @@ class TestNotebookScreen(GUITestCase):
         self.app = FakeApp()
         self.app.run = lambda *a, **kw: None
         self.app._run_prepare()
-        self.app.note_controller = SimpleNamespace(
-            get_note_by_id=lambda note_id: Note(id=note_id, title="Note C", topic=None, content="Hello", created_at=datetime.now()),
-            update_note=lambda note_id, content: setattr(self, "updated", (note_id, content))
-        )
         App.get_running_app = lambda: self.app
 
         self.screen = NotebookScreen()
@@ -401,13 +418,12 @@ class TestNotebookScreen(GUITestCase):
         self.screen.open_note(5)
         self.assertEqual(self.screen.ids["content_input"].text, "Hello")
 
-    def test_save_note_updates_controller(self):
+    def test_save_note_updates_controller(self):        
         # Saving should update the note content via controller
         self.screen.current_note_id = 5
         self.screen.ids["content_input"].text = "Updated"
         self.screen.save_note()
-        self.assertEqual(getattr(self, "updated")[1], "Updated")
-
+        self.assertEqual(self.app.updated, (5, "Updated"))
 
 # ----------------------------
 # Tests for NoteItem
@@ -423,14 +439,17 @@ class TestNoteItem(GUITestCase):
         self.app = FakeApp()
         self.app.run = lambda *a, **kw: None
         self.app._run_prepare()
-        self.app.topic_controller = SimpleNamespace(get_topic_name=lambda topic_id: "Math")
-        self.app.note_controller = SimpleNamespace(delete_note=lambda note_id: setattr(self, "deleted", note_id))
-        self.app.sm = SimpleNamespace(
-            get_screen=lambda name: SimpleNamespace(
-                open_notebook=lambda note: setattr(self, "opened", note),
-                refresh_note_list=lambda: setattr(self, "refreshed", True)
-            )
+
+        # Mock NotesScreen behavior
+        self.notes_screen = SimpleNamespace(
+            open_notebook=lambda note: setattr(self, "opened_note", note),
+            refresh_note_list=lambda: setattr(self, "refreshed", True)
         )
+
+        self.app.sm = SimpleNamespace(
+            get_screen=lambda name: self.notes_screen
+        )
+
         App.get_running_app = lambda: self.app
 
         self.note = Note(id=10, title="Title", topic=Topic(id=1, name="Math"), content="", created_at=datetime.now())
@@ -439,14 +458,15 @@ class TestNoteItem(GUITestCase):
     def test_open_note_calls_screen(self):
         # Clicking on a note item should call open_note on NotesScreen
         self.item.open_note()
-        self.assertEqual(getattr(self, "opened").id, 10)
+        self.assertEqual(self.opened_note.id, 10)
 
     def test_delete_note_calls_controller_and_refresh(self):
         # Deleting a note should call controller and refresh note list
         self.item.delete_note()
-        Clock.tick()  # process scheduled callbacks
-        self.assertEqual(getattr(self, "deleted"), 10)
-        self.assertTrue(getattr(self, "refreshed"))
+        Clock.tick() # process scheduled callbacks
+        # Deleted note id is stored on FakeApp
+        self.assertEqual(self.app.deleted, 10)
+        self.assertTrue(self.refreshed)
 
 # ----------------------------
 # Tests for PomodoroScreen
