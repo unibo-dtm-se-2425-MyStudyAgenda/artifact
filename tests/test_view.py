@@ -16,6 +16,7 @@ from app.main import MyStudyAgenda
 from app.model.task import Task
 from app.model.topic import Topic
 from app.model.note import Note
+from app.view.task_screen import TaskScreen
 from app.view.planner_screen import PlannerScreen
 from app.view.notes_screen import NotesScreen
 from app.view.notebook_screen import NotebookScreen
@@ -103,6 +104,36 @@ class FakeApp(MDApp):
 
         # Screen Manager Mock
         self.sm = SimpleNamespace(get_screen=MagicMock())
+
+# ----------------------------
+# Tests for TaskScreen (RIVEDUTO)
+# ----------------------------
+@pytest.mark.ui
+class TestTaskScreen(GUITestCase):
+    # Tests task list loading and UI interactions within TaskScreen
+
+    def setUp(self):
+        # Initialize and prepare the Kivy app before each test
+        if not EventLoop.event_listeners:
+            EventLoop.ensure_window()
+
+        self.app = FakeApp()
+        self.app.run = lambda *a, **kw: None
+        self.app._run_prepare()
+
+        # The TaskScreen instance is created
+        self.task_screen = TaskScreen()
+        self.app.sm.get_screen.return_value = self.task_screen
+        
+        App.get_running_app = lambda: self.app
+
+        # Mock ids of TaskScreen for testing layout manipulation
+        self.task_screen.ids = {"task_list": BoxLayout()}
+
+    def test_load_tasks_adds_widgets(self):
+        # Verify that after loading tasks, the task_list container has task widgets added
+        self.task_screen.load_tasks()
+        self.assertGreater(len(self.task_screen.ids["task_list"].children), 0)
 
 # ----------------------------
 # Tests for AddTaskPopup
