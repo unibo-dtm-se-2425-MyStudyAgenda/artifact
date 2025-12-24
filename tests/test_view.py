@@ -26,6 +26,7 @@ from app.view.notes_screen import NotesScreen
 from app.view.note_item import NoteItem
 from app.view.notebook_screen import NotebookScreen
 from datetime import datetime
+from app.view.pomodoro_screen import PomodoroScreen
 
 # ----------------------------
 # Base class for GUI test cases
@@ -446,3 +447,49 @@ class TestNoteItem(GUITestCase):
         Clock.tick()  # process scheduled callbacks
         self.assertEqual(getattr(self, "deleted"), 10)
         self.assertTrue(getattr(self, "refreshed"))
+
+# ----------------------------
+# Tests for PomodoroScreen
+# ----------------------------
+class PomodoroGUITestCase(unittest.TestCase):
+    # Tests Pomodoro timer initialization, countdown, and reset
+
+    def setUp(self):
+        # Create a fake app and initialize PomodoroScreen with mocked ids
+        if not EventLoop.event_listeners:
+            EventLoop.ensure_window()
+        self.app = FakeApp()
+        self.app.run = lambda *args: None
+        self.app._run_prepare()
+
+        self.screen = PomodoroScreen()
+        self.screen.ids = {
+            "study_spinner": SimpleNamespace(text="25"),
+            "break_spinner": SimpleNamespace(text="5"),
+            "setup_view": SimpleNamespace(opacity=1),
+            "timer_view": SimpleNamespace(opacity=0),
+            "timer_label": SimpleNamespace(text="00:00"),
+        }
+        self.screen.timer_event = SimpleNamespace(cancel=lambda: None)
+
+    def test_reset_pomodoro_resets_ui(self):
+        # Reset should bring all labels to their "standard" value
+        self.screen.ids["study_spinner"].text = "15"
+        self.screen.ids["break_spinner"].text = "10"
+        self.screen.ids["timer_label"].text = "10:00"
+        self.screen.reset_pomodoro()
+        self.assertEqual(self.screen.ids["study_spinner"].text, "25")
+        self.assertEqual(self.screen.ids["break_spinner"].text, "5")
+        self.assertEqual(self.screen.ids["timer_label"].text, "00:00")
+
+    def test_start_pomodoro_initializes_durations(self):
+        # Starting Pomodoro should initialize study and break durations
+        self.screen.start_pomodoro()
+        self.assertTrue(hasattr(self.screen, "study_duration"))
+        self.assertTrue(hasattr(self.screen, "break_duration"))
+
+    def test_update_timer_counts_down(self):
+        # Update should decrease remaining time
+        self.screen.remaining_time = 10
+        self.screen.update_timer(1)
+        self.assertEqual(self.screen.remaining_time, 9)
