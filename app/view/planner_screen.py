@@ -73,11 +73,9 @@ class PlannerScreen(Screen):
         self.update_week_view()
     
     def update_week_view(self):
-        # Clear existing grid content and graphics
-        grid = self.ids.planner_grid
-        grid.clear_widgets()
-        grid.canvas.before.clear()
-        grid.canvas.after.clear()
+        # Clear existing content and graphics
+        self.ids.planner_grid.clear_widgets()
+        self.ids.days_header.clear_widgets()
         self.day_cols = []
 
         # Compute current week
@@ -97,26 +95,22 @@ class PlannerScreen(Screen):
                 size=(self.col_default_width, self.header_h),
                 halign="center",
                 valign="middle",
-                color=(0, 0, 0, 1),
+                color=(0,0,0,1)
             )
-            grid.add_widget(lbl)
+            self.ids.days_header.add_widget(lbl)
 
         # Time column + 7 day columns
         total_height = self.hour_px * 24
         time_col = FloatLayout(size_hint=(1/8, None), height=total_height)
         self._draw_time_ticks(time_col)
-        grid.add_widget(time_col)
+        self.ids.planner_grid.add_widget(time_col)
 
         for i in range(7):
             col = FloatLayout(size_hint=(1/8, None), height=total_height)
-            grid.add_widget(col)
+            self.ids.planner_grid.add_widget(col)
             self.day_cols.append(col)
 
-        # Draw scheduled tasks on the planner
         self.draw_tasks(monday, sunday)
-
-        # Re-render planner automatically when windowis resized
-        grid.bind(size=lambda *args: self._on_grid_resize())
 
     def _on_grid_resize(self, *args):
         # Callback: redraw the planner when the grid is resized
