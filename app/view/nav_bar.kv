@@ -1,4 +1,6 @@
-<NavigationBar@BoxLayout>:
+<NavigationBar>:
+    id: nav
+    screen_manager: None
     orientation: 'horizontal'
     size_hint_y: None
     height: '50dp'
@@ -11,30 +13,22 @@
             pos: self.pos
             size: self.size
 
-    Button:
-        text: 'Tasks'
-        on_release: app.root.current = 'tasks'
-        background_normal: ""
-        background_color: 1, 1, 0.3, 0.5
-        color: 0, 0, 0, 1
+    NavButton:
+        text: "Tasks"
+        screen_name: "tasks"
+        screen_manager: root.screen_manager
 
-    Button:
-        text: 'Planner'
-        on_release: app.root.current = 'planner'
-        background_normal: ""
-        background_color: 1, 1, 0.3, 0.5
-        color: 0, 0, 0, 1
+    NavButton:
+        text: "Planner"
+        screen_name: "planner"
+        screen_manager: root.screen_manager
 
-    Button:
-        text: 'Notes'
-        on_release: app.root.current = 'notes'
-        background_normal: ""
-        background_color: 1, 1, 0.3, 0.5
-        color: 0, 0, 0, 1
-    
-    Button:
-        text: 'Pomodoro Timer'
-        on_release: app.root.current = 'pomodoro'
-        background_normal: ""
-        background_color: 1, 1, 0.3, 0.5
-        color: 0, 0, 0, 1
+    NavButton:
+        text: "Notes"
+        screen_name: "notes"
+        screen_manager: root.screen_manager
+
+    NavButton:
+        text: "Pomodoro Timer"
+        screen_name: "pomodoro"
+        screen_manager: root.screen_manager
