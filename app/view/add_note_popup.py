@@ -44,6 +44,6 @@ class AddNotePopup(Popup):
 
         self.dismiss()
 
-        notebook = app.root.get_screen("notebook")
+        notebook = app.sm.get_screen("notebook")
         notebook.open_note(note_id)
-        app.root.current = "notebook"
+        app.sm.current = "notebook"
