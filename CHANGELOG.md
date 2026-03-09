@@ -6,6 +6,10 @@ This project follows **Semantic Versioning** and uses **Conventional Commits** a
 
 ---
 
+## [0.2.1] - 2026-03-09
+### Fixed
+- Planner Screen UI, restoring its capability to adapt to the window size
+
 ## [0.2.0] - 2026-03-09
 ### Added
 - Active tab coloring in navigation bar
