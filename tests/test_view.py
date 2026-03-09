@@ -313,6 +313,7 @@ class TestPlannerScreen(GUITestCase):
         self.screen = PlannerScreen()
         self.screen.ids = {
             "planner_grid": GridLayout(cols=8, size=(800, 600)),
+            "days_header": GridLayout(cols=8, size=(800, 40)), 
             "month_label": type("obj", (), {"text": ""})()
         }
 
@@ -398,7 +399,7 @@ class TestAddNotePopup(GUITestCase):
         self.app = FakeApp()
         self.app.run = lambda *a, **kw: None
         self.app._run_prepare()
-        self.app.root = SimpleNamespace(
+        self.app.sm = SimpleNamespace(
             get_screen=lambda name: SimpleNamespace(open_note=lambda note_id: setattr(self, "opened", note_id)),
             current="notes"
         )
@@ -423,7 +424,7 @@ class TestAddNotePopup(GUITestCase):
         # Valid note creation should dismiss popup and switch to notebook
         self.popup.create_note()
         self.assertTrue(hasattr(self, "dismissed"))
-        self.assertEqual(self.app.root.current, "notebook")
+        self.assertEqual(self.app.sm.current, "notebook")
 
 # ----------------------------
 # Tests for NotebookScreen
