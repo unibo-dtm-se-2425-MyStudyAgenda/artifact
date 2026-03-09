@@ -6,6 +6,14 @@ This project follows **Semantic Versioning** and uses **Conventional Commits** a
 
 ---
 
+## [0.2.0] - 2026-03-09
+### Added
+- Active tab coloring in navigation bar
+
+### Changed
+- Introduced universal navigation bar component
+- PlannerScreen updated: day header fixed while task grid scrolls
+
 ## [0.1.0] – 2026-01-04
 
 ### Added
