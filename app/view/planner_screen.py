@@ -188,7 +188,7 @@ class PlannerScreen(Screen):
                 self._bg_rect(task_box, task_color, radius=8)
 
                 # Task label inside the rectangle
-                txt = task.description if getattr(task, "description", "") else "Task"
+                txt = task.description + "\n(" + task.topic.name + ")" if task.topic.name!=None else task.description
                 lbl = Label(
                     text=txt,
                     size_hint=(1, 1),
