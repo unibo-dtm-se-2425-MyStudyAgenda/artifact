@@ -6,6 +6,10 @@ This project follows **Semantic Versioning** and uses **Conventional Commits** a
 
 ---
 
+## [0.3.0] - 2026-03-09
+### Added
+- Topic name visibility in Planner Screen
+
 ## [0.2.1] - 2026-03-09
 ### Fixed
 - Planner Screen UI, restoring its capability to adapt to the window size
