@@ -6,15 +6,28 @@ This project follows **Semantic Versioning** and uses **Conventional Commits** a
 
 ---
 
+## [1.0.0] - 2026-03-31
+
+### Added
+- Comprehensive project documentation including README.md and a detailed report.
+- Clear installation instructions for both standard users (via TestPyPI) and developers (via Poetry).
+
+### Changed
+- **Project Status**: Promoted from Beta to Stable (First Official Release)
+- Updated versioning to reflect a production-ready state.
+
 ## [0.3.0] - 2026-03-09
+
 ### Added
 - Topic name visibility in Planner Screen
 
 ## [0.2.1] - 2026-03-09
+
 ### Fixed
 - Planner Screen UI, restoring its capability to adapt to the window size
 
 ## [0.2.0] - 2026-03-09
+
 ### Added
 - Active tab coloring in navigation bar
 
