@@ -63,7 +63,7 @@ Contributions are welcome! To maintain code quality:
 2. Ensure all logic tests pass: `poetry run pytest -m "not ui"`
 3. Open a **Pull Request** for maintainer review.
 
-For detailed guidelines, see the **Developer Guide** in the project documentation.
+For detailed guidelines, see the **Developer Guide** in the [project documentation](https://unibo-dtm-se-2425-mystudyagenda.github.io/report/).
 
 ## CI/CD Status
 This project uses GitHub Actions for quality assurance:
@@ -71,7 +71,7 @@ This project uses GitHub Actions for quality assurance:
 - CD: Automatically builds and deploys to TestPyPI upon version tagging.
 
 ## Authors
-- **Anna Campagna** - [anna-campagna](https://github.com/annacampagna)
+- **Anna Campagna** - [annacampagna](https://github.com/annacampagna)
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for details.
