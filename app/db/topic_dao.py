@@ -10,6 +10,11 @@ class TopicDAO:
         # Inserts a new topic into the database; uses INSERT OR IGNORE to avoid duplicates by name
         self.db.cursor.execute("INSERT OR IGNORE INTO topics (name) VALUES (?)", (topic.name,))
         self.db.commit()
+    
+    def delete_topic(self, topic_id: int):
+        # Deletes a specific topic identified by its ID
+        self.db.cursor.execute("DELETE FROM topics WHERE id = ?", (topic_id,))
+        self.db.commit()
 
     def get_all_topics(self):
         # Retrieves all topics from the database; returns a list of rows (id, name)

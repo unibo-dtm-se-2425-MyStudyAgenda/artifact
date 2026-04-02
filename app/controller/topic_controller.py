@@ -11,6 +11,10 @@ class TopicController:
         topic = Topic(name=topic_name)
         self.dao.insert_topic(topic)
 
+    def delete_topic(self, topic_id: int):
+        # Permanently remove a topic by ID
+        self.dao.delete_topic(topic_id)
+
     def get_all_topics(self):
         # Retrieve all topics and convert them to Topic objects
         rows = self.dao.get_all_topics()
