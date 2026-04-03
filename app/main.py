@@ -27,6 +27,8 @@ Builder.load_file("app/view/notes_screen.kv")
 Builder.load_file("app/view/note_item.kv")
 Builder.load_file("app/view/notebook_screen.kv")
 Builder.load_file("app/view/add_note_popup.kv")
+Builder.load_file("app/view/topic_item.kv")
+Builder.load_file("app/view/manage_topics_popup.kv")
 
 class MyStudyAgenda(MDApp):
     def build(self):
