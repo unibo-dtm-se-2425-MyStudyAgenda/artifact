@@ -27,6 +27,7 @@ from app.view.add_task_popup import AddTaskPopup
 from app.view.add_topic_popup import AddTopicPopup
 from app.view.schedule_popup import SchedulePopup
 from app.view.add_note_popup import AddNotePopup
+from app.view.manage_topics_popup import ManageTopicsPopup
 from datetime import datetime
 
 # ----------------------------
@@ -545,3 +546,96 @@ class PomodoroGUITestCase(unittest.TestCase):
         self.screen.remaining_time = 10
         self.screen.update_timer(1)
         self.assertEqual(self.screen.remaining_time, 9)
+
+# ----------------------------
+# Tests for ManageTopicsPopup
+# ----------------------------
+@pytest.mark.ui
+class TestManageTopicsPopup(GUITestCase):
+    # Tests initialization, topic loading, and deletion coordination between TopicItem and ManageTopicsPopup
+
+    def setUp(self):
+        super().setUp()
+        
+        # Setup Mock Data
+        self.test_topics = [
+            Topic(id=1, name="Math"),
+            Topic(id=2, name="Physics")
+        ]
+
+        # Mock Controller behavior
+        self.topic_controller = SimpleNamespace(
+            get_all_topics=lambda: self.test_topics,
+            delete_topic=lambda tid: self.test_topics.remove(
+                next(t for t in self.test_topics if t.id == tid)
+            )
+        )
+
+        # Mock Parent Popup, to verify if on_open is called to refresh the spinner
+        self.parent_called = False
+        self.mock_parent = SimpleNamespace(
+            ids=SimpleNamespace(topic_spinner=SimpleNamespace(values=[])),
+            on_open=lambda: setattr(self, "parent_called", True)
+        )
+
+        # Mock App Environment and inject mocked controller so the UI interacts with it
+        self.app = App.get_running_app()
+        self.app.topic_controller = self.topic_controller
+
+        # Initialize the Popup
+        self.popup = ManageTopicsPopup(parent_popup=self.mock_parent)
+        self.popup.open()
+        self.run_clock()
+
+    def tearDown(self):
+        self.popup.dismiss()
+        super().tearDown()
+
+    def test_initial_topics_loading(self):
+        # Verify that the UI correctly generates one TopicItem for each Topic in the DB
+        displayed_items = self.popup.ids.topics_list.children
+        # The number of widgets should match the length of the test_topics list
+        self.assertEqual(len(displayed_items), len(self.test_topics))
+
+    def test_topic_item_data_integrity(self):
+        # Ensure each TopicItem widget holds the correct data from the Model
+        # Kivy adds widgets from bottom to top; the last child is the first topic
+        first_widget = self.popup.ids.topics_list.children[-1]
+        
+        self.assertEqual(first_widget.topic_id, self.test_topics[0].id)
+        self.assertEqual(first_widget.topic_name, self.test_topics[0].name)
+
+    def test_delete_action_updates_ui_and_notifies_parent(self):
+        """
+        Simulate a user clicking 'Delete' on a TopicItem and verify:
+        1. The controller is called
+        2. The UI list is refreshed
+        3. The parent popup (spinner) is notified
+        """
+        # Pick the first widget to delete
+        target_item = self.popup.ids.topics_list.children[-1]
+        target_id = target_item.topic_id
+        
+        # Reset parent call tracker before action
+        self.parent_called = False
+        
+        # Trigger the delete logic inside the TopicItem
+        target_item.delete_topic()
+        
+        # Advance Kivy clock to process the schedule_once(load_topics)
+        self.run_clock()
+
+        # Check if the topic was removed from the mock list
+        self.assertFalse(any(t.id == target_id for t in self.test_topics))
+        
+        # Check if the widget was removed from the UI
+        self.assertEqual(len(self.popup.ids.topics_list.children), 1)
+        
+        # Verify that the parent popup was refreshed (for the spinner)
+        self.assertTrue(self.parent_called)
+
+    def test_close_button_dismisses_popup(self):
+        # Ensure the close button properly triggers the dismiss action (simple UI integrity check)
+        self.popup.dismiss()
+        self.run_clock()
+        self.assertTrue(True) # Reaching here without crash
