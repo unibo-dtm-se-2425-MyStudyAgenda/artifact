@@ -55,6 +55,15 @@ class TestTopicController(BaseControllerTest):
         topic_name = self.topic_controller.get_topic_name(topic_id)
         self.assertEqual(topic_name, "History")
 
+    def test_delete_topic(self):
+        # Delete an existing topic
+        self.topic_controller.create_topic("Subject")
+        topic_id = self.topic_controller.get_topic_id("Subject")
+
+        self.topic_controller.delete_topic(topic_id)
+        topics = self.topic_controller.get_all_topics()
+        self.assertEqual(len(topics), 0)
+
 
 # ------------------------
 # TaskController tests
