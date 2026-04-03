@@ -1,0 +1,33 @@
+<TopicItem>:
+    size_hint_y: None
+    height: "60dp"
+    padding: 10
+    spacing: 12
+    canvas.before:
+        Color:
+            rgba: 0.96, 0.96, 0.96, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        width: self.parent.width if self.parent else 1
+        spacing: 15
+        pos_hint: {"center_y": .5}
+
+        Label:
+            text: root.topic_name
+            color: 0, 0, 0, 1
+            text_size: self.size
+            halign: "left"
+            valign: "middle"
+            size_hint_x: 0.8
+
+        MDRaisedButton:
+            text: "Delete"
+            md_bg_color: 1, 0, 0, 1
+            size_hint_x: 0.2
+            on_release: root.delete_topic()
