@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.uix.popup import Popup
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 from app.view.add_topic_popup import AddTopicPopup
+from app.view.manage_topics_popup import ManageTopicsPopup
 
 class AddTaskPopup(Popup):
     # Popup for creating a new task (includes fields, validation, and save logic)
@@ -123,4 +124,9 @@ class AddTaskPopup(Popup):
     def add_new_topic(self):
         # Open a popup to create a new topic directly from the task popup
         popup = AddTopicPopup(parent_popup=self)
+        popup.open()
+
+    def open_manage_topics(self):
+        # Open a popup for topic management directly from the task popup
+        popup = ManageTopicsPopup(parent_popup=self)
         popup.open()

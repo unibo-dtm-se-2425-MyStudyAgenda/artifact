@@ -1,8 +1,8 @@
 from kivy.uix.popup import Popup
 from kivy.app import App
 from app.model.note import Note
-from app.model.topic import Topic
 from app.view.add_topic_popup import AddTopicPopup
+from app.view.manage_topics_popup import ManageTopicsPopup
 
 class AddNotePopup(Popup):
     def on_open(self):
@@ -47,3 +47,8 @@ class AddNotePopup(Popup):
         notebook = app.sm.get_screen("notebook")
         notebook.open_note(note_id)
         app.sm.current = "notebook"
+
+    def open_manage_topics(self):
+        # Open a popup for topic management directly from the note popup
+        popup = ManageTopicsPopup(parent_popup=self)
+        popup.open()

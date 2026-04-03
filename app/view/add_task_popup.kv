@@ -2,7 +2,7 @@
     title: "Add Task"
     title_color: 0, 0, 0, 1
     title_align: "center"
-    size_hint: 0.7, 0.7
+    size_hint: 0.8, 0.8
     auto_dismiss: True
     background_color: 1, 1, 1, 1
     background: ""
@@ -33,6 +33,13 @@
                 size_hint_x: None
                 width: "40dp"
                 on_release: root.add_new_topic()
+                background_normal: ""
+                background_color: 0.49, 0.71, 0.84, 1
+            Button:
+                text: "Manage..."
+                size_hint_x: None
+                width: "80dp"
+                on_release: root.open_manage_topics()
                 background_normal: ""
                 background_color: 0.49, 0.71, 0.84, 1
 
