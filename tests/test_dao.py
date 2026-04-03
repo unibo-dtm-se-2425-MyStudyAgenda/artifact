@@ -56,7 +56,7 @@ class TestTopicDAO(BaseDAOTest):
         self.assertEqual(t_by_id[1], "Science")
     
     def test_delete_topic(self):
-        # Update note content and then delete it
+        # Create topic and then delete it
         topic = Topic(name="Subject")
         topic_id = self.topic_dao.insert_topic(topic)
 
