@@ -6,6 +6,13 @@ This project follows **Semantic Versioning** and uses **Conventional Commits** a
 
 ---
 
+## [1.1.0] - 2026-04-07
+
+### Added
+- Ability to delete topics with real-time UI refresh.
+- Topic management popup interface.
+- Unit and GUI tests for topic management.
+
 ## [1.0.0] - 2026-03-31
 
 ### Added
