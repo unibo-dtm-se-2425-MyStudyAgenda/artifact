@@ -4,6 +4,9 @@ import os
 import pytest
 os.environ["KIVY_NO_ARGS"] = "1" # Prevent Kivy from parsing CLI args in tests
 import unittest
+if "CI" in os.environ:
+    raise unittest.SkipTest("Skipping GUI tests in CI environment")
+
 from kivy.base import EventLoop
 from kivy.clock import Clock
 from kivymd.app import MDApp
