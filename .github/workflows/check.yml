@@ -52,4 +52,4 @@ jobs:
           export PYTHONPATH=.
           export KIVY_BACKEND=offscreen 
           export KIVY_NO_ARGS=1
-          poetry run python -m unittest discover -v -s tests
+          poetry poetry run pytest --maxfail=1 --disable-warnings -q
