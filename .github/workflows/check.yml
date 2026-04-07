@@ -48,4 +48,8 @@ jobs:
 
       - name: Run tests
         shell: bash
-        run: poetry run python -m unittest discover -v -s tests
+        run: |
+          export PYTHONPATH=.
+          export KIVY_BACKEND=offscreen 
+          export KIVY_NO_ARGS=1
+          poetry run python -m unittest discover -v -s tests
