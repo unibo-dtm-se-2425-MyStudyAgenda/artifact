@@ -1,13 +1,14 @@
 from kivy.uix.popup import Popup
 from kivy.app import App
 from app.view.topic_item import TopicItem
+from kivy.clock import Clock
 
 class ManageTopicsPopup(Popup):
     def __init__(self, parent_popup=None, **kwargs):
         super().__init__(**kwargs)
         # Save the reference to the parent popup (either AddTask o AddNote)
         self.parent_popup = parent_popup 
-        self.load_topics()
+        Clock.schedule_once(lambda dt: self.load_topics())
 
     def load_topics(self):
         # Load all topics from the controller and display them in the UI
