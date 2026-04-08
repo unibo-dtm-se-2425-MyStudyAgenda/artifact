@@ -1,12 +1,15 @@
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 import os
 import pytest
+if "CI" in os.environ:
+    pytest.skip("Skipping GUI tests in CI environment", allow_module_level=True)
+
 os.environ["KIVY_NO_ARGS"] = "1" # Prevent Kivy from parsing CLI args in tests
 os.environ["KIVY_WINDOW"] = "mock" # Force Kivy into “mock window” mode
+
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 import unittest
-if "CI" in os.environ:
-    raise unittest.SkipTest("Skipping GUI tests in CI environment")
 
 from unittest.mock import patch
 from kivy.base import EventLoop
@@ -573,7 +576,7 @@ class TestManageTopicsPopup(GUITestCase):
     def test_topic_item_data_integrity(self):
         # Ensure each TopicItem widget holds the correct data from the Model
         # Kivy adds widgets from bottom to top; the last child is the first topic
-        first_widget = self.popup.ids.topics_list.children[-1]
+        first_widget = self.popup.ids["topics_list"].children[-1]
         
         self.assertEqual(first_widget.topic_id, self.test_topics[0].id)
         self.assertEqual(first_widget.topic_name, self.test_topics[0].name)
@@ -586,7 +589,7 @@ class TestManageTopicsPopup(GUITestCase):
         3. The parent popup (spinner) is notified
         """
         # Pick the first widget to delete
-        target_item = self.popup.ids.topics_list.children[-1]
+        target_item = self.popup.ids["topics_list"].children[-1]
         target_id = target_item.topic_id
         
         # Reset parent call tracker before action
@@ -602,7 +605,7 @@ class TestManageTopicsPopup(GUITestCase):
         self.assertFalse(any(t.id == target_id for t in self.test_topics))
         
         # Check if the widget was removed from the UI
-        self.assertEqual(len(self.popup.ids.topics_list.children), 1)
+        self.assertEqual(len(self.popup.ids["topics_list"].children), 1)
         
         # Verify that the parent popup was refreshed (for the spinner)
         self.assertTrue(self.parent_called)
