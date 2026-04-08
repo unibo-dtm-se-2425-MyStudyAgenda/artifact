@@ -7,15 +7,14 @@ import unittest
 if "CI" in os.environ:
     raise unittest.SkipTest("Skipping GUI tests in CI environment")
 
+from unittest.mock import patch
 from kivy.base import EventLoop
 from kivy.clock import Clock
 from kivymd.app import MDApp
-from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from types import SimpleNamespace
 from unittest.mock import MagicMock
-from app.main import MyStudyAgenda
 from app.model.task import Task
 from app.model.topic import Topic
 from app.model.note import Note
@@ -43,8 +42,16 @@ class GUITestCase(unittest.TestCase):
         # Initialize and prepare the Kivy app before each test
         if not EventLoop.event_listeners:
             EventLoop.ensure_window()
-        self.app = MyStudyAgenda()
+
+        self.app = FakeApp()
+        # do not allow kivy to start main loop
+        self.app.run = lambda *a, **kw: None
         self.app._run_prepare()
+
+        AddTaskPopup.on_open = lambda self: None
+
+        #App.get_running_app = lambda: self.app
+        MDApp.get_running_app = lambda: self.app
 
     def tearDown(self):
         # Stop the Kivy app after each test to clean resources
@@ -64,6 +71,9 @@ class GUITestCase(unittest.TestCase):
 class FakeApp(MDApp):
     # Minimal fake KivyMD app to satisfy screen dependencies and mock controllers
     def build(self):
+        # initialize themes system
+        self.theme_cls.theme_style = "Light"
+        self.theme_cls.primary_palette = "Blue"
         return None
 
     def __init__(self, **kwargs):
@@ -85,7 +95,7 @@ class FakeApp(MDApp):
                 )
             ],
             create_task=lambda task: 123,
-            update_task=MagicMock(), # Aggiunto per coerenza
+            #update_task=MagicMock(),
         )
 
         # Topic Controller Mock
@@ -107,29 +117,20 @@ class FakeApp(MDApp):
         )
 
         # Screen Manager Mock
-        self.sm = SimpleNamespace(get_screen=MagicMock())
+        self.sm = SimpleNamespace(get_screen=MagicMock(), current="main")
 
 # ----------------------------
-# Tests for TaskScreen (RIVEDUTO)
+# Tests for TaskScreen
 # ----------------------------
 @pytest.mark.ui
 class TestTaskScreen(GUITestCase):
     # Tests task list loading and UI interactions within TaskScreen
 
     def setUp(self):
-        # Initialize and prepare the Kivy app before each test
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-
-        self.app = FakeApp()
-        self.app.run = lambda *a, **kw: None
-        self.app._run_prepare()
-
+        super().setUp()
         # The TaskScreen instance is created
         self.task_screen = TaskScreen()
         self.app.sm.get_screen.return_value = self.task_screen
-        
-        App.get_running_app = lambda: self.app
 
         # Mock ids of TaskScreen for testing layout manipulation
         self.task_screen.ids = {"task_list": BoxLayout()}
@@ -150,6 +151,12 @@ class TestAddTaskPopup(GUITestCase):
         # Open the AddTaskPopup before each test and force UI refresh
         super().setUp()
         self.popup = AddTaskPopup()
+        self.popup.ids = {
+            "desc_input": SimpleNamespace(text=""),
+            "priority_spinner": SimpleNamespace(text=""),
+            "error_label": SimpleNamespace(text=""),
+            "add_btn": SimpleNamespace(disabled=False)
+        }
         self.popup.open()
         self.run_clock()
 
@@ -211,13 +218,7 @@ class TestAddTopicPopup(GUITestCase):
     # Tests topic creation and parent popup refresh in AddTopicPopup
 
     def setUp(self):
-        # Prepare fake app with mocked topic controller
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-        self.app = FakeApp()
-        self.app.run = lambda *args: None
-        self.app._run_prepare()
-        App.get_running_app = lambda: self.app
+        super().setUp()
 
         # Create AddTopicPopup with mocked ids
         self.popup = AddTopicPopup()
@@ -252,13 +253,7 @@ class TestSchedulePopup(GUITestCase):
     # Tests date and time selection inside SchedulePopup
 
     def setUp(self):
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-        self.app = FakeApp()
-        self.app.run = lambda *args: None
-        self.app._run_prepare()
-
-        App.get_running_app = lambda: self.app
+        super().setUp()
 
         # Create a TaskItem and open SchedulePopup before each test
         task = Task(description="Test", priority=1)
@@ -306,13 +301,7 @@ class TestPlannerScreen(GUITestCase):
     # Tests week navigation, layout updates, and parsing in PlannerScreen
 
     def setUp(self):
-        # Initialize screen with fake app and mock controllers
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-        self.app = FakeApp()
-        self.app.run = lambda *args: None
-        self.app._run_prepare()
-        App.get_running_app = lambda: self.app
+        super().setUp()
 
         self.screen = PlannerScreen()
         self.screen.ids = {
@@ -351,18 +340,12 @@ class TestPlannerScreen(GUITestCase):
 # ----------------------------
 # Tests for NotesScreen
 # ----------------------------
+@pytest.mark.ui
 class TestNotesScreen(GUITestCase):
     # Tests notes list loading and notebook screen navigation
 
     def setUp(self):
-        # Prepare fake app and mock controllers for NotesScreen
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-
-        self.app = FakeApp()
-        self.app.run = lambda *a, **kw: None
-        self.app._run_prepare()
-        App.get_running_app = lambda: self.app
+        super().setUp()
 
         # Create NotesScreen with mocked ids
         self.notes_screen = NotesScreen()
@@ -391,23 +374,12 @@ class TestNotesScreen(GUITestCase):
 # ----------------------------
 # Tests for AddNotePopup
 # ----------------------------
+@pytest.mark.ui
 class TestAddNotePopup(GUITestCase):
     # Tests topic population, validation, and note creation
 
     def setUp(self):
-        # Prepare fake app with topic and note controllers
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-
-        simulated_topic = Topic(id=1, name="Math")
-        self.app = FakeApp()
-        self.app.run = lambda *a, **kw: None
-        self.app._run_prepare()
-        self.app.sm = SimpleNamespace(
-            get_screen=lambda name: SimpleNamespace(open_note=lambda note_id: setattr(self, "opened", note_id)),
-            current="notes"
-        )
-        App.get_running_app = lambda: self.app
+        super().setUp()
 
         # Create popup with mocked ids
         self.popup = AddNotePopup()
@@ -433,18 +405,12 @@ class TestAddNotePopup(GUITestCase):
 # ----------------------------
 # Tests for NotebookScreen
 # ----------------------------
+@pytest.mark.ui
 class TestNotebookScreen(GUITestCase):
     # Tests loading, saving, and navigation for NotebookScreen
 
     def setUp(self):
-        # Prepare fake app with mocked note controller
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-
-        self.app = FakeApp()
-        self.app.run = lambda *a, **kw: None
-        self.app._run_prepare()
-        App.get_running_app = lambda: self.app
+        super().setUp()
 
         self.screen = NotebookScreen()
         self.screen.ids = {"content_input": SimpleNamespace(text="")}
@@ -464,17 +430,12 @@ class TestNotebookScreen(GUITestCase):
 # ----------------------------
 # Tests for NoteItem
 # ----------------------------
+@pytest.mark.ui
 class TestNoteItem(GUITestCase):
     # Tests initialization and user actions for NoteItem
 
     def setUp(self):
-        # Prepare fake app with mocked controllers and screen manager
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-
-        self.app = FakeApp()
-        self.app.run = lambda *a, **kw: None
-        self.app._run_prepare()
+        super().setUp()
 
         # Mock NotesScreen behavior
         self.notes_screen = SimpleNamespace(
@@ -486,10 +447,13 @@ class TestNoteItem(GUITestCase):
             get_screen=lambda name: self.notes_screen
         )
 
-        App.get_running_app = lambda: self.app
-
         self.note = Note(id=10, title="Title", topic=Topic(id=1, name="Math"), content="", created_at=datetime.now())
         self.item = NoteItem(self.note)
+
+        self.item.ids = {
+            "title_label": SimpleNamespace(text=""),
+            "delete_btn": SimpleNamespace()
+        }
 
     def test_open_note_calls_screen(self):
         # Clicking on a note item should call open_note on NotesScreen
@@ -499,7 +463,7 @@ class TestNoteItem(GUITestCase):
     def test_delete_note_calls_controller_and_refresh(self):
         # Deleting a note should call controller and refresh note list
         self.item.delete_note()
-        Clock.tick() # process scheduled callbacks
+        self.run_clock() # process scheduled callbacks
         # Deleted note id is stored on FakeApp
         self.assertEqual(self.app.deleted, 10)
         self.assertTrue(self.refreshed)
@@ -507,16 +471,12 @@ class TestNoteItem(GUITestCase):
 # ----------------------------
 # Tests for PomodoroScreen
 # ----------------------------
-class PomodoroGUITestCase(unittest.TestCase):
+@pytest.mark.ui
+class TestPomodoroScreen(GUITestCase):
     # Tests Pomodoro timer initialization, countdown, and reset
 
     def setUp(self):
-        # Create a fake app and initialize PomodoroScreen with mocked ids
-        if not EventLoop.event_listeners:
-            EventLoop.ensure_window()
-        self.app = FakeApp()
-        self.app.run = lambda *args: None
-        self.app._run_prepare()
+        super().setUp()
 
         self.screen = PomodoroScreen()
         self.screen.ids = {
@@ -581,12 +541,19 @@ class TestManageTopicsPopup(GUITestCase):
             on_open=lambda: setattr(self, "parent_called", True)
         )
 
-        # Mock App Environment and inject mocked controller so the UI interacts with it
-        self.app = App.get_running_app()
+        # patch load_topics during init to avoid widgets are called before they are created
+        with patch.object(ManageTopicsPopup, "load_topics", lambda x: None):
+            self.popup = ManageTopicsPopup(parent_popup=self.mock_parent)
+
+        self.popup.ids = {
+            "topics_list": BoxLayout(),
+            "close_btn": MagicMock()
+        }
+
         self.app.topic_controller = self.topic_controller
 
-        # Initialize the Popup
-        self.popup = ManageTopicsPopup(parent_popup=self.mock_parent)
+        # Now run real logic
+        self.popup.load_topics()
         self.popup.open()
         self.run_clock()
 
@@ -596,7 +563,7 @@ class TestManageTopicsPopup(GUITestCase):
 
     def test_initial_topics_loading(self):
         # Verify that the UI correctly generates one TopicItem for each Topic in the DB
-        displayed_items = self.popup.ids.topics_list.children
+        displayed_items = self.popup.ids["topics_list"].children
         # The number of widgets should match the length of the test_topics list
         self.assertEqual(len(displayed_items), len(self.test_topics))
 
