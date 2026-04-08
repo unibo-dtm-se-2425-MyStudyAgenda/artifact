@@ -3,6 +3,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 import os
 import pytest
 os.environ["KIVY_NO_ARGS"] = "1" # Prevent Kivy from parsing CLI args in tests
+os.environ["KIVY_WINDOW"] = "mock" # Force Kivy into “mock window” mode
 import unittest
 if "CI" in os.environ:
     raise unittest.SkipTest("Skipping GUI tests in CI environment")
@@ -56,10 +57,12 @@ class GUITestCase(unittest.TestCase):
     def tearDown(self):
         # Stop the Kivy app after each test to clean resources
         self.app.stop()
+        Clock._del_queue.clear()
 
     def run_clock(self):
-        # Force Kivy's clock to process scheduled events (simulate UI loop)
-        Clock.tick()
+        # Force Kivy's clock to process scheduled events (simulate UI loop), with limited clock runs
+        for c in range(5):
+            Clock.tick()
 
     def find_widget_by_id(self, screen, widget_id):
         # Helper to retrieve a widget by its id from a given screen
