@@ -6,6 +6,18 @@ This project follows **Semantic Versioning** and uses **Conventional Commits** a
 
 ---
 
+## [1.1.1] - 2026-04-10
+
+### Fixed
+- View Layer Logic: Resolved a race condition in ManageTopicsPopup where topics were loading before the UI was fully initialized. By deferring the loading process, the application now avoids crashes when components are created without an active KV context.
+- Test Suite Stability: Fixed a critical issue where GUI tests would hang or fail inconsistently in CI environments.
+  + Introduced headless window mocking for CI runs.
+  + Improved test isolation by ensuring the Kivy Clock is properly flushed and cleared between test cases.
+  + Standardized the usage of internal widget IDs across test suites.
+
+### Changed
+- CI Configuration: Moved environment-specific skip commands to the earliest execution phase to ensure Kivy doesn't initialize unnecessary resources during non-GUI tests.
+
 ## [1.1.0] - 2026-04-07
 
 ### Added
