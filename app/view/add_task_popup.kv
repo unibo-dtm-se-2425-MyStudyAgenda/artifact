@@ -54,21 +54,21 @@
         Button:
             id: date_btn
             text: "Select Date"
-            on_release: root.open_date_picker()
+            on_release: root.open_date_picker(self)
             background_normal: ""
             background_color: 0.49, 0.71, 0.84, 1
 
         Button:
             id: start_btn
             text: "Select Start Time"
-            on_release: root.open_time_picker("start")
+            on_release: root.open_time_picker("start", self)
             background_normal: ""
             background_color: 0.49, 0.71, 0.84, 1
 
         Button:
             id: end_btn
             text: "Select End Time"
-            on_release: root.open_time_picker("end")
+            on_release: root.open_time_picker("end", self)
             background_normal: ""
             background_color: 0.49, 0.71, 0.84, 1
 

@@ -1,8 +1,10 @@
 from kivy.app import App
 from kivy.uix.popup import Popup
-from kivymd.uix.pickers import MDDatePicker, MDTimePicker
+from kivymd.uix.pickers.datepicker import MDModalDatePicker
+from kivymd.uix.pickers.timepicker import MDTimePickerInput
 from app.view.add_topic_popup import AddTopicPopup
 from app.view.manage_topics_popup import ManageTopicsPopup
+from datetime import datetime
 
 class AddTaskPopup(Popup):
     # Popup for creating a new task (includes fields, validation, and save logic)
@@ -19,36 +21,46 @@ class AddTaskPopup(Popup):
         topic_names = [t["name"] if isinstance(t, dict) else t.name for t in topics]
         self.ids.topic_spinner.values = topic_names
 
-    def open_date_picker(self):
+    def open_date_picker(self, button):
         # Open a date picker dialog for selecting the task date
-        date_dialog = MDDatePicker()
-        date_dialog.bind(on_save=self.set_date)
+        date_dialog = MDModalDatePicker()
+        date_dialog.bind(on_ok=lambda instance: self.set_date(instance, button))
+        date_dialog.bind(on_cancel=lambda instance: instance.dismiss())
         date_dialog.open()
 
-    def set_date(self, instance, value, date_range=None):
+    def set_date(self, instance, button):
         # Set the selected date from the date picker
-        formatted = value.isoformat()
-        self.selected_date = formatted
-        self.ids.date_btn.text = f"Date: {formatted}"
+        # Get the selected dates from the instance directly
+        # get_date() returns a list of datetime.date objects in KivyMD 2.0
+        selection = instance.get_date()
+        if selection:
+            self.selected_date = selection[0].isoformat()
+            button.text = f"Date: {self.selected_date}"
+        
+        instance.dismiss()
 
-    def open_time_picker(self, mode):
+    def open_time_picker(self, mode, button):
         # Open a time picker dialog for selecting start or end time
-        time_dialog = MDTimePicker()
-        time_dialog.bind(time=lambda inst, time: self.set_time(mode, time))
+        time_dialog = MDTimePickerInput()
+        time_dialog.bind(on_ok=lambda instance: self.set_time(instance, mode, button))
+        time_dialog.bind(on_cancel=lambda instance: instance.dismiss())
         time_dialog.open()
 
-    def set_time(self, mode, time):
+    def set_time(self, instance, mode, button):
         # Set the selected start or end time and validate them
-        formatted = time.strftime("%H:%M")
+        # Access the time from the instance (instance.time is a datetime.time object)
+        selected_time = instance.time
+        formatted = selected_time.strftime("%H:%M")
+        
         if mode == "start":
             self.start_time = formatted
-            self.ids.start_btn.text = f"Start: {formatted}"
+            button.text = f"Start: {self.start_time}"
         else:
             self.end_time = formatted
-            self.ids.end_btn.text = f"End: {formatted}"
+            button.text = f"End: {self.end_time}"
 
-        # Validate times after every change
         self.validate_inputs()
+        instance.dismiss()
 
     def validate_inputs(self):
         # Validate description, priority and time consistency
@@ -73,7 +85,6 @@ class AddTaskPopup(Popup):
         # Check time
         # Ensure that end time is later than start time, otherwise disable save
         if self.start_time and self.end_time:
-            from datetime import datetime
             fmt = "%H:%M"
             try:
                 start_dt = datetime.strptime(self.start_time, fmt)
