@@ -281,8 +281,12 @@ class TestSchedulePopup(GUITestCase):
             # Ensure that selecting a date updates the button text
             from datetime import date
             d = date(2025, 1, 1)
+            fake_dialog = type("MockDialog", (), {
+                "get_date": lambda *args: [d], 
+                "dismiss": lambda *args: None
+            })()
             fake_btn = type("B", (), {"text": ""})()
-            self.popup.set_date(d, fake_btn)
+            self.popup.set_date(fake_dialog, fake_btn)
             self.assertIn("2025-01-01", fake_btn.text)
 
     def test_invalid_time_order(self):
@@ -291,10 +295,18 @@ class TestSchedulePopup(GUITestCase):
         # Creates mock buttons that SchedulePopup tries to update
         fake_start_btn = type("B", (), {"text": ""})()
         fake_end_btn = type("B", (), {"text": ""})() 
-        
+        start_dialog = type("MockTime", (), {
+            "time": time(12, 0), 
+            "dismiss": lambda *args: None
+        })()
+        end_dialog = type("MockTime", (), {
+            "time": time(11, 0), 
+            "dismiss": lambda *args: None
+        })()
+
         # Simulates the setting of start and end time
-        self.popup.set_time("start", time(12, 0), fake_start_btn)
-        self.popup.set_time("end", time(11, 0), fake_end_btn)
+        self.popup.set_time(start_dialog, "start", fake_start_btn)
+        self.popup.set_time(end_dialog, "end", fake_end_btn)
         
         self.assertEqual(self.popup.ids.error_label.text, "End time must be later than start time")
         self.assertTrue(self.popup.ids.save_btn.disabled)
