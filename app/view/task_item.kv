@@ -49,14 +49,19 @@
             halign: "center"
             valign: "middle"
             size_hint_x: 1
-
-        MDRaisedButton:
-            text: "Schedule"
+        
+        MDButton:
+            style: "filled"
             on_release: root.open_schedule_popup()
             size_hint_x: 1
+            MDButtonText:
+                text: "Schedule"
 
-        MDRaisedButton:
-            text: "Delete"
-            md_bg_color: 1, 0, 0, 1
+        MDButton:
+            style: "filled"
+            theme_bg_color: "Custom"
+            md_bg_color: "red"
             on_release: root.delete_task()
             size_hint_x: 1
+            MDButtonText:
+                text: "Delete"

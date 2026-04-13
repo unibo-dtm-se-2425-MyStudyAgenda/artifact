@@ -1,4 +1,11 @@
 <PomodoroScreen>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
     BoxLayout:
         orientation: "vertical"
         padding: 10
@@ -70,20 +77,24 @@
                 Label:
                     text: ""
 
-                MDRaisedButton:
-                    text: "Reset"
+                MDButton:
+                    style: "filled"
                     on_release: root.reset_pomodoro()
-                    font_size: 24
+                    theme_bg_color: "Custom"
                     md_bg_color: 1, 0.7, 0, 1
                     size_hint: None, None
                     size: 120, 50
+                    MDButtonText:
+                        text: "Reset"
 
-                MDRaisedButton:
-                    text: "Start"
+                MDButton:
+                    style: "filled"
                     on_release: root.start_pomodoro()
                     font_size: 24
                     size_hint: None, None
                     size: 120, 50
+                    MDButtonText:
+                        text: "Start"
 
                 Label:
                     text: ""
@@ -108,10 +119,13 @@
                     pos_hint: {"center_x": 0.5, "y": 0.7}
             
             FloatLayout:
-                MDRaisedButton:
-                    text: "Stop Session"
+                MDButton:
+                    style: "filled"
                     size_hint_y: None
                     md_bg_color: 1, 0, 0, 1
                     height: "48dp"
                     on_release: root.stop_session()
                     pos_hint: {"center_x": 0.5, "y": 0.2}
+                    MDButtonText:
+                        text: "Stop Session"
+                
